@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的学术附件</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; padding: 20px; background: #f9f9f9; }
+  h1 { color: #333; }
+  .file-block { background: white; border-radius: 8px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+  .file-name { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; color: #0366d6; }
+  pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+  code { font-family: "Courier New", monospace; }
+  img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px; }
+  .error { color: #d32f2f; }
+</style>
+</head>
+<body>
+<h1>📚 附件内容一览</h1>
+<p>以下内容由脚本自动生成，供 DeepSeek 阅读。</p>
+
+<div class="file-block">
+  <div class="file-name">dataloader.py</div>
+  <pre><code>import torch
+from torch.nn.utils.rnn import pad_sequence as pad
+from torch.utils.data import Dataset, DataLoader
+import random
+from rdkit import Chem
+import numpy as np
+class DTIDataset(Dataset):
+    def __init__(self, list_IDs, df, pr_features):
+        self.list_IDs = list_IDs
+        self.df = df
+        self.pr_features = pr_features
+    def __len__(self):
+        return len(self.list_IDs)
+
+    def __getitem__(self, idx):
+        index = self.list_IDs[idx]
+        # smiles
+        SMILES = self.df.iloc[index]['SMILES']
+        # SMILES = randomize_smile(SMILES)
+        # proteins
+        pr_id = self.df.iloc[index]['pr_id']
+        pr_seq = self.df.iloc[index]['Protein']
+        Protein = self.pr_features[pr_id]
+        # labels
+        y = self.df.iloc[index]["Y"]
+        return {
+            'SMILES': SMILES,
+            'Protein': Protein,
+            'Protein_seq': pr_seq,
+            'Y': y
+        }
+
+def randomize_smile(sml):
+    """Function that randomizes a SMILES sequence. This was adapted from the
+    implemetation of E. Bjerrum 2017, SMILES Enumeration as Data Augmentation
+    for Neural Network Modeling of Molecules.
+    Args:
+        sml: SMILES sequence to randomize.
+    Return:
+        randomized SMILES sequence or
+        nan if SMILES is not interpretable.
+    """
+    try:
+        m = Chem.MolFromSmiles(sml)
+        ans = list(range(m.GetNumAtoms()))
+        np.random.shuffle(ans)
+        nm = Chem.RenumberAtoms(m, ans)
+        smiles = Chem.MolToSmiles(nm, canonical=False)
+
+        return smiles
+
+    except:
+        return sml
+
+
+def randomize_smile_with_mapping(sml):
+    try:
+        # Parse the SMILES string into a molecule object
+        m = Chem.MolFromSmiles(sml)
+        # Create a mapping from atom index to its position in the SMILES
+        atom_indices = list(range(m.GetNumAtoms()))
+        np.random.shuffle(atom_indices)  # Shuffle the indices
+
+        # Renumber the atoms according to the shuffled indices
+        nm = Chem.RenumberAtoms(m, atom_indices)
+
+        # Generate the new SMILES string
+        new_smiles = Chem.MolToSmiles(nm, canonical=False)
+
+        # Create a mapping from original atom indices to new positions
+        original_to_new_positions = {i: atom_indices.index(i) for i in range(len(atom_indices))}
+
+        return new_smiles, original_to_new_positions
+    except:
+        return sml, {}
+
+def convert_batch_pr(batch):
+    max_len = max([tensor.shape[0] for tensor in batch])
+    mask = torch.zeros(len(batch), max_len)
+    for i, tensor in enumerate(batch):
+        mask[i, :tensor.shape[0]] = 1
+    padded_batch = pad(batch, batch_first=True)
+    return {'input_ids': padded_batch, 'attention_mask': mask}
+
+def mask_tokens(inputs, attention_mask, tokenizer, probability=0.15):
+    """ Prepare masked tokens inputs/labels for masked language modeling: 80% MASK, 10% random, 10% original. """
+    labels = inputs.clone()
+    mask = attention_mask.clone()
+    mask[:, 0] = 0  # cls token
+    eos_pos = mask.sum(dim=1).unsqueeze(1)
+    mask.scatter_(1, eos_pos, 0)
+    mask = mask.bool()
+    # We sample a few tokens in each sequence for masked-LM training (with probability args.mlm_probability defaults to 0.15 in Bert/RoBERTa)
+    masked_indices = torch.bernoulli(torch.full(labels.shape, probability)).bool()
+    masked_indices = masked_indices * mask
+    labels[~masked_indices] = -1  # We only compute loss on masked tokens
+    #pos = (labels + 1).nonzero()[;]
+    # 80% of the time, we replace masked input tokens with tokenizer.mask_token ([MASK])
+    indices_replaced = torch.bernoulli(torch.full(labels.shape, 0.8)).bool() & masked_indices
+    inputs[indices_replaced] = tokenizer.convert_tokens_to_ids(tokenizer.mask_token)
+
+    # 10% of the time, we replace masked input tokens with random word
+    indices_random = torch.bernoulli(torch.full(labels.shape, 0.5)).bool() & masked_indices & ~indices_replaced
+    random_words = torch.randint(len(tokenizer), labels.shape, dtype=torch.long)
+    inputs[indices_random] = random_words[indices_random]
+
+    # The rest of the time (10% of the time) we keep the masked input tokens unchanged
+    return inputs, labels
+
+def drop_tokens(batch, drop_prob=0.7, aa_avg_f=None,mutation_rate=0):
+    batch_id, batch_mask = batch['input_ids'], batch['attention_mask']
+
+    if aa_avg_f is not None:
+        aa_avg_f = aa_avg_f.to(batch_id.device)
+
+    # Step 1: Target random deletion 
+    if 0 < drop_prob:
+        num_to_retain = int(max(1, batch_id.size(1) * (1-drop_prob)))
+
+        indices = sorted(random.sample(range(1, batch_id.size(1)), num_to_retain))
+        indices.insert(0, 0)
+        batch_id = batch_id[:, indices]
+        batch_mask = batch_mask[:, indices]
+
+    # Step 2: Random mutation
+    if aa_avg_f is not None and mutation_rate > 0:
+        # Excluding CLS and EOS positions
+        mask = batch_mask.clone()
+        mask[:, 0] = 0  # CLS token
+        eos_pos = mask.sum(dim=1).unsqueeze(1).to(dtype=torch.int64)
+        mask.scatter_(1, eos_pos, 0)  # EOS token
+        mask = mask.bool()
+        # generate replace mask
+        replace_mask = torch.rand(mask.shape) < mutation_rate
+        replace_mask &= mask
+
+        # generate random indices
+        random_indices = torch.randint(
+            0, aa_avg_f.size(0),
+            batch_id.shape[:2], device=batch_id.device
+        )
+
+        # replace amino acid feature
+        replacements = aa_avg_f[random_indices]
+
+        batch_id[replace_mask] = replacements[replace_mask]
+
+    return batch_id, batch_mask
+
+def get_dataLoader(batch_size, dataset, drug_tokenizer,aa=None, shuffle=False, MLM=False,
+                   mask_rate=0, target_random_deletion_ratio=0, mutation_rate=0):
+    def collate_fn(batch_samples):
+        batch_Drug, batch_Protein, batch_seq, batch_label = [], [], [], []
+        for sample in batch_samples:
+            batch_Drug.append(sample['SMILES'])
+            batch_Protein.append(sample['Protein'])
+            batch_seq.append(sample['Protein_seq'])
+            batch_label.append(sample['Y'])
+        batch_pr = convert_batch_pr(batch_Protein)
+        batch_inputs_drug = drug_tokenizer(batch_Drug, padding='longest', return_tensors="pt", truncation=True, max_length=200)
+        batch_inputs_drug_m, masked_drug_labels = None, None
+        # if 0 < target_mask_rate:
+        batch_pr['input_ids'], batch_pr['attention_mask'] = drop_tokens(batch_pr, target_random_deletion_ratio,
+                                                                            aa_avg_f=aa, mutation_rate=mutation_rate)
+
+        if MLM:
+            batch_inputs_drug_m = batch_inputs_drug
+            batch_inputs_drug_m['input_ids'], masked_drug_labels\
+                = mask_tokens(batch_inputs_drug_m['input_ids'], batch_inputs_drug_m['attention_mask'], drug_tokenizer,mask_rate)
+
+        return {
+            'batch_inputs_drug': batch_inputs_drug,
+            'batch_inputs_drug_m': batch_inputs_drug_m,
+            'masked_drug_labels': masked_drug_labels,
+            'batch_inputs_pr': batch_pr,
+            'labels': batch_label
+        }
+    return DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, collate_fn=collate_fn)
+</code></pre>
+</div>
+
+
+<div class="file-block">
+  <div class="file-name">main.py</div>
+  <pre><code>import argparse
+import os
+import pickle
+import warnings
+from time import time
+import pandas as pd
+import torch
+from omegaconf import OmegaConf
+from dataloader.dataloader import DTIDataset, get_dataLoader
+from transformers import AutoTokenizer
+from models.tapb import TAPB
+from trainer import Trainer
+from utils.utils import set_seed, mkdir, load_config_file
+from preparation import generate_esm2_feature, kmeans_for_c
+
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+parser = argparse.ArgumentParser(description="TAPB for DTI prediction")
+parser.add_argument('--data', required=True, type=str, metavar='TASK',
+                    help='dataset')
+parser.add_argument('--split', default='random', type=str, metavar='S', help="split task",
+                    choices=['random', 'cold', 'cluster', 'augmented'])
+args = parser.parse_args()
+
+TRAIN_CONFIG_PATH = 'configs/train_config.yaml'
+MODEL_CONFIG_PATH = 'configs/model_config.yaml'
+print(f"Running on: {device}", end="\n\n")
+
+def main():
+    torch.cuda.empty_cache()
+    warnings.filterwarnings("ignore", message="invalid value encountered in divide")
+
+    train_config = load_config_file(TRAIN_CONFIG_PATH)
+    model_config = load_config_file(MODEL_CONFIG_PATH)
+    config = OmegaConf.merge(train_config, model_config)
+    model_configs = dict(model_config)
+    set_seed(seed=config.TRAIN.SEED)
+    output_path = f"./results/{args.data}/{args.split}/{config.TRAIN.OUTPUT_DIR}{config.TRAIN.SEED}"
+    mkdir(output_path)
+    dataFolder = f'./datasets/{args.data}'
+    dataFolder = os.path.join(dataFolder, str(args.split))
+    mol_path = 'models/drug/molformer'
+
+    if args.split == 'cluster':
+        train_path = os.path.join(dataFolder, 'source_train_with_id.csv')
+        val_path = os.path.join(dataFolder, "target_test_with_id.csv")
+        test_path = os.path.join(dataFolder, "target_test_with_id.csv")
+    else:
+        train_path = os.path.join(dataFolder, 'train_with_id.csv')
+        val_path = os.path.join(dataFolder, "val_with_id.csv")
+        test_path = os.path.join(dataFolder, "test_with_id.csv")
+
+    df_train = pd.read_csv(train_path)
+    df_val = pd.read_csv(val_path)
+    df_test = pd.read_csv(test_path)
+
+    protein_path = os.path.join(dataFolder, config.TRAIN.PR_PATH)
+    c_path = os.path.join(dataFolder, config.TRAIN.C_PATH)
+
+    if not os.path.isfile(protein_path):
+        generate_esm2_feature(config, args.data, args.split)
+
+    if not os.path.isfile(c_path):
+        kmeans_for_c(config, df_train, dataFolder)
+
+    C = pickle.load(open(c_path, 'rb'))
+
+    # confounder dict
+    c = torch.from_numpy(C['cluster_centers']).to(device).permute(1, 0).to(dtype=torch.float32)
+
+    # p_ci for backdoor adjustment
+    p_ci = C['prior'].to(device).to(dtype=torch.float32)
+
+    # amino acids dict for mutation
+    aa_dict = C['aa'].to(device).to(dtype=torch.float32)
+
+    # TAPB-Full
+    model = TAPB(c=c, p_ci=p_ci, model_configs=model_configs).to(device)
+
+    opt = torch.optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()),
+                            lr=config.TRAIN.LR, weight_decay=config.TRAIN.WEIGHT_DECAY)
+
+    protein_f = open(protein_path, 'rb')
+    pr_f = pickle.load(protein_f)
+    train_dataset = DTIDataset(df_train.index.values, df_train, pr_f)
+    val_dataset = DTIDataset(df_val.index.values, df_val, pr_f)
+    test_dataset = DTIDataset(df_test.index.values, df_test, pr_f)
+
+    drug_tokenizer = AutoTokenizer.from_pretrained(mol_path, trust_remote_code=True)
+    bz = config.TRAIN.BATCH_SIZE
+    MLM = config.TRAIN.MLM
+    train_dataloader = get_dataLoader(bz, train_dataset, drug_tokenizer, aa=aa_dict, shuffle=True, MLM=MLM,
+                                      mask_rate=config.TRAIN.MASK_PROBABILITY,
+                                      target_random_deletion_ratio=config.TRAIN.TARGET_RANDOM_DROP_RATIO,
+                                      mutation_rate=config.TRAIN.MUTAION)
+    val_dataloader = get_dataLoader(bz, val_dataset, drug_tokenizer)
+    test_dataloader = get_dataLoader(bz, test_dataset, drug_tokenizer)
+
+    trainer = Trainer(model, opt, device, train_dataloader, val_dataloader, test_dataloader, output_path, config)
+    result, best_epoch = trainer.train()
+
+
+    with open(os.path.join(output_path, "model_architecture.txt"), "w") as wf:
+        wf.write(str(model))
+    print()
+
+    return result, best_epoch
+
+
+if __name__ == '__main__':
+    s = time()
+    result, best_epoch = main()
+    e = time()
+    print(f"Total running time: {round(e - s, 2)}s")
+</code></pre>
+</div>
+
+
+<div class="file-block">
+  <div class="file-name">preparation.py</div>
+  <pre><code>import os
+import torch
+import pickle
+import numpy as np
+import pandas as pd
+import torch
+from tqdm import tqdm
+from collections import defaultdict
+from sklearn.cluster import KMeans
+from transformers import AutoTokenizer, EsmModel
+from utils.utils import load_config_file, mkdir
+
+def generate_esm2_feature(config, dataset, split):
+    print('start generating esm2 feature')
+
+    dataset_path = f'datasets/{dataset}/{split}/'
+    mkdir(dataset_path)
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    if split == 'cluster':
+        dfs = [pd.read_csv(f'{dataset_path}{dataset}_with_id.csv') for dataset in
+               ['source_train', 'target_train', 'target_test']]
+    else:
+        dfs = [pd.read_csv(f'{dataset_path}{dataset}_with_id.csv') for dataset in ['train', 'val', 'test']]
+    df = pd.concat(dfs)
+
+    ems2_model_path = 'models/protein/esm2_model'
+    tokenizer = AutoTokenizer.from_pretrained(ems2_model_path)
+    model = EsmModel.from_pretrained(ems2_model_path).to(device)
+    model.eval()  # disables dropout for deterministic results
+    prlist = list()
+
+    # for protein_id in tqdm(df['pr_id'].unique(), desc='Processing'):
+    #     protein_seq = df[df['pr_id'] == protein_id]['Protein'].iloc[0]
+    #     inputs = tokenizer(protein_seq, return_tensors="pt", truncation=True, max_length=2000).to(device)
+    #     with torch.no_grad():
+    #         outputs = model(**inputs)
+    #     sr = outputs.last_hidden_state.squeeze()
+    #     prlist.append(sr)
+
+    for protein_id in tqdm(df['pr_id'].unique(), desc='Processing'):
+        protein_seq = df[df['pr_id'] == protein_id]['Protein'].iloc[0]
+        inputs = tokenizer(protein_seq, return_tensors="pt", truncation=True, max_length=2000).to(device)
+        with torch.no_grad():
+            outputs = model(**inputs)
+        sr = outputs.last_hidden_state.squeeze().cpu()  # 关键：移回CPU
+        prlist.append(sr)
+        del inputs, outputs                               # 释放GPU显存
+        torch.cuda.empty_cache()
+
+    save_path = os.path.join(dataset_path, config.TRAIN.PR_PATH)
+    file = open(save_path, 'wb')
+    pickle.dump(prlist, file)
+    print('finish generating esm2 feature')
+
+
+def kmeans_c(featurelist, config, d_model):
+    matrix = np.vstack(featurelist)
+
+    kmeans = KMeans(n_clusters=config.TRAIN.DICT_SIZE)
+    kmeans.fit(matrix)
+
+    labels = kmeans.labels_
+
+    cluster_centers = np.zeros((d_model, config.TRAIN.DICT_SIZE))
+
+    prior = list()
+    total = 0
+    for i in range(config.TRAIN.DICT_SIZE):
+        cluster_position = matrix[labels == i]
+        num = cluster_position.shape[0]
+        prior.append(num)
+        total += num
+        cluster_centers[:, i] = np.mean(cluster_position, axis=0)
+    prior = torch.tensor(prior)
+    prior = prior / total
+    cluster_dict = dict()
+    cluster_dict['cluster_centers'] = cluster_centers
+    cluster_dict['prior'] = prior
+    return cluster_dict
+
+
+def kmeans_for_c(train_config, train_df, save_path):
+    print('start generating confounder dict & aa dict')
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    torch.cuda.empty_cache()
+    df = train_df
+    ems2_model_path = 'models/protein/esm2_model'
+    max_length = 2000
+    d_model = 1280
+    tokenizer = AutoTokenizer.from_pretrained(ems2_model_path)
+    model = EsmModel.from_pretrained(ems2_model_path).to(device)
+    model.eval()  # disables dropout for deterministic results
+
+    featurelist = list()
+    # store every aa feature
+    aa_features = defaultdict(list)
+    for protein_id in tqdm(df['pr_id'].unique(), desc='Processing'):
+        protein_seq = df[df['pr_id'] == protein_id]['Protein'].iloc[0]
+        inputs = tokenizer(protein_seq, return_tensors="pt", truncation=True, max_length=max_length).to(device)
+        with torch.no_grad():
+            outputs = model(**inputs)
+        sr = outputs.last_hidden_state.squeeze()
+        featurelist.append(sr.mean(0).cpu())
+        sr_2 = sr[1:-1, :].cpu()
+        for i in range(sr_2.size(0)):
+            aa = protein_seq[i]
+            vector = sr_2[i]  # Hidden state of the i-th amino acid
+            aa_features[aa].append(vector)
+
+    # Calculate the average feature for each amino acid type
+    aa_avg_list = []
+    for aa in sorted(aa_features.keys()):  # Sorting ensures consistent order
+        vectors = torch.stack(aa_features[aa])  # Stack the list into a tensor
+        avg_vector = torch.mean(vectors, dim=0)  # Compute the mean along the rows
+        aa_avg_list.append(avg_vector)
+
+    # Combine the average features of all amino acids into a single tensor
+    aa_tensor = torch.stack(aa_avg_list)
+
+    cluster_dict = kmeans_c(featurelist, train_config, d_model)
+    cluster_dict['aa'] = aa_tensor
+    file = open(save_path+'/'+train_config.TRAIN.C_PATH, 'wb')
+    pickle.dump(cluster_dict, file)
+    torch.cuda.empty_cache()
+    print('finish generating confounder dict & aa dict')
+</code></pre>
+</div>
+
+
+<div class="file-block">
+  <div class="file-name">tapb.py</div>
+  <pre><code>import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from models.transformer import TransformerEncoder, TransformerDecoder
+
+def precompute_freqs_cis(dim: int, end: int, theta: float = 10000.0):
+    freqs = 1.0 / (theta ** (torch.arange(0, dim, 2)[: (dim // 2)].float() / dim))
+    t = torch.arange(end, device=freqs.device)  # type: ignore
+    freqs = torch.outer(t, freqs).float()  # type: ignore
+    freqs_cis = torch.polar(torch.ones_like(freqs), freqs)  # complex64
+    return freqs_cis
+
+def freeze(layer):
+    for child in layer.children():
+        for param in child.parameters():
+            param.requires_grad = False
+
+class MLMHead(nn.Module):
+    def __init__(self, n_embd, vocab_size):
+        super().__init__()
+        self.linear1 = nn.Linear(n_embd, n_embd)
+        self.activation = nn.GELU()
+        self.ln = nn.LayerNorm(n_embd)
+        self.linear2 = nn.Linear(n_embd, vocab_size, bias=False)
+
+        self.bias = nn.Parameter(torch.zeros(vocab_size))
+        self.linear2.bias = self.bias
+
+    def forward(self, x):
+        x = self.linear1(x)
+        x = self.activation(x)
+        x = self.ln(x)
+        logits = self.linear2(x)
+        return logits
+
+class TAPB(nn.Module):
+    def __init__(self, model_configs, c=None, p_ci=None):
+        super().__init__()
+        # Params
+        d_model = model_configs['DrugEncoder']['d_model']
+        n_heads = model_configs['DrugEncoder']['n_head']
+        vocab_size = model_configs['DrugEncoder']['vocab_size']
+        fusion_n_heads = model_configs['TransformerDeocder']['n_head']
+        self.d_model = d_model
+        self.encoder_n_heads = n_heads
+        self.fusion_n_heads = fusion_n_heads
+        d_esm = 1280
+
+        # Drug
+        self.precompute_freqs_cis = precompute_freqs_cis(d_model // n_heads, 4000)
+        self.drug_encoder = TransformerEncoder(config=model_configs['DrugEncoder'])
+        self.MLMHead = MLMHead(d_model, vocab_size)
+
+        # Fusion
+        self.aggregator = TransformerDecoder(config=model_configs['TransformerDeocder'])
+        self.classifier = nn.Linear(self.d_model // self.fusion_n_heads, 2)
+
+        # classifier2 is used for TAPB ablation study
+        # self.classifier2 = nn.Linear(self.d_model, 2)
+
+        # interventional training
+        self.c = c
+        self.p_ci = p_ci
+        self.c_center = c.size(0)
+        self.ln = nn.LayerNorm(d_esm)
+        if (1280 % self.c_center)!=0:
+            raise RuntimeError(F"d_model % self.c_center)!=0")
+        elif self.c_center != fusion_n_heads:
+            raise RuntimeError(F"confounder dict self.c_center != n_heads")
+        else:
+            dim = int(d_esm / self.c_center)
+        self.linear_q = nn.Linear(d_esm, d_esm)
+        self.linear_k = nn.Linear(d_esm, dim)
+        self.linear_v = nn.Linear(d_esm, dim)
+        self.pr_linear = nn.Linear(d_esm, d_model)
+
+    def encode_drug(self, input_drugs, freqs_cis):
+        drug_id = input_drugs['input_ids']
+        drug_padding_mask = ~input_drugs['attention_mask'].bool()
+        bz, len_d = drug_id.size()
+        drug_attn_mask = drug_padding_mask.unsqueeze(1).unsqueeze(1).expand(-1, self.encoder_n_heads, len_d, -1)
+        drug_f = self.drug_encoder(drug_id, drug_attn_mask, freqs_cis[:len_d, :].to(drug_id.device))
+        return drug_f
+
+    def encode_protein(self, pr_f, pr_mask):
+        bz = pr_mask.size(0)
+        c_i = self.c.unsqueeze(0).expand(bz, -1, -1)
+        pr_f = self.confounder_aligment_module(pr_f, c_i)
+
+        # pr_f = self.pr_linear(pr_f)
+        return pr_f, pr_mask
+
+    def confounder_aligment_module(self, pr_f, ci):
+        device = pr_f.device
+        bz = pr_f.size(0)
+        Q = self.linear_q(pr_f).view(bz, -1, self.c_center, 1280 // self.c_center).permute(0, 2, 1, 3)
+        K = self.linear_k(ci).unsqueeze(1).permute(0, 2, 1, 3)
+        V = self.linear_v(ci).unsqueeze(1).permute(0, 2, 1, 3)
+        A = torch.matmul(Q, K.permute(0, 1, 3, 2))
+        A = F.softmax(A / torch.sqrt(torch.tensor(K.shape[1], dtype=torch.float32, device=device)), dim=-1)
+        Q = torch.matmul(A, V)
+        Q = Q.permute(0, 2, 1, 3).contiguous()
+        Q = Q.view(bz, -1, 1280)
+        Q = Q + pr_f
+        Q = self.pr_linear(Q)
+        return Q
+
+    def fusion(self, drug_f, pr_f, drug_padding_mask, protein_padding_mask):
+        bz, len_d, _ = drug_f.size()
+        drug_attn_mask = ~drug_padding_mask.bool().unsqueeze(1).unsqueeze(1).expand(-1, self.fusion_n_heads, len_d, -1)
+        cross_attn_mask = ~protein_padding_mask.bool().unsqueeze(1).unsqueeze(1).expand(-1, self.fusion_n_heads, len_d, -1)
+        fusion_f, attention_map = self.aggregator(src=pr_f, tgt=drug_f, self_attn_mask=drug_attn_mask,
+                                                cross_attn_mask=cross_attn_mask)
+        return fusion_f, attention_map
+
+    def backdoor_adjustmet(self, logits):
+        p_ci = self.p_ci.unsqueeze(0).unsqueeze(-1)
+        logits = logits * p_ci
+        return logits.sum(1)
+
+    def forward(self, input_drugs, input_proteins, pr_mask=None, masked_drugs=None):
+            # encode
+            drug_f = self.encode_drug(input_drugs, self.precompute_freqs_cis)
+            pr_f, pr_mask = self.encode_protein(input_proteins, pr_mask)
+
+            # fusion
+            fusion_f, attn_map = self.fusion(drug_f, pr_f, input_drugs['attention_mask'], pr_mask)
+
+            # mlm
+            drug_mlm_logits = None
+            if masked_drugs is not None:
+                drug_f_mlm = self.encode_drug(masked_drugs, self.precompute_freqs_cis)
+                drug_mlm_logits = self.MLMHead(drug_f_mlm).permute(0, 2, 1)
+
+            bz = fusion_f.size(0)
+            c_i = fusion_f.view(bz, -1, self.c_center, self.d_model // self.c_center).mean(1)
+            # c_i = fusion_f.mean(1)
+            logits = self.classifier(c_i)
+            # logits = self.classifier2(c_i)
+            logits = F.softmax(logits, dim=-1)
+            logits = self.backdoor_adjustmet(logits).squeeze()
+
+            return {'logits': logits, 'fusion_f': fusion_f, 'attn_map': attn_map, 'drug_mlm_logits': drug_mlm_logits}
+</code></pre>
+</div>
+
+
+<div class="file-block">
+  <div class="file-name">trainer.py</div>
+  <pre><code>import sys
+import torch
+import torch.nn as nn
+import copy
+import os
+import numpy as np
+from sklearn.metrics import roc_auc_score, average_precision_score, roc_curve, confusion_matrix, precision_recall_curve,accuracy_score,f1_score
+from prettytable import PrettyTable
+from tqdm import tqdm
+
+
+class Trainer(object):
+    def __init__(self, model, optim, device, train_dataloader, val_dataloader, test_dataloader, output_path, config):
+        self.model = model
+        self.optim = optim
+        self.device = device
+        self.batch_size = config.TRAIN.BATCH_SIZE
+        self.epochs = config.TRAIN.MAX_EPOCH
+
+        self.current_epoch = 0
+        self.train_dataloader = train_dataloader
+        self.val_dataloader = val_dataloader
+        self.test_dataloader = test_dataloader
+        self.step = 0
+
+        self.nb_training = len(self.train_dataloader)
+
+        self.best_model = None
+        self.best_epoch = None
+        self.best_auroc = 0
+
+        self.train_loss_epoch = []
+        self.train_model_loss_epoch = []
+        self.val_loss_epoch, self.val_auroc_epoch = [], []
+        self.test_metrics = {}
+        self.config = config
+        self.output_dir = output_path
+        valid_metric_header = ["# Epoch", "AUROC", "AUPRC"]
+        test_metric_header = ["# Best Epoch", "AUROC", "AUPRC", "F1", "Sensitivity", "Specificity", "Accuracy",
+                              "Threshold"]
+
+        train_metric_header = ["# Epoch", "Train_loss"]
+        self.val_table = PrettyTable(valid_metric_header)
+        self.test_table = PrettyTable(test_metric_header)
+        self.train_table = PrettyTable(train_metric_header)
+
+    def train(self):
+        float2str = lambda x: '%0.4f' % x
+        for i in range(self.epochs):
+            self.current_epoch += 1
+            train_loss = self.train_epoch()
+            train_lst = ["epoch " + str(self.current_epoch)] + list(map(float2str, [train_loss]))
+
+            self.train_table.add_row(train_lst)
+            self.train_loss_epoch.append(train_loss)
+            auroc, auprc = self.test(dataloader="val")
+
+            val_lst = ["epoch " + str(self.current_epoch)] + list(map(float2str, [auroc, auprc]))
+            self.val_table.add_row(val_lst)
+            self.val_auroc_epoch.append(auroc)
+            if auroc >= self.best_auroc:
+                self.best_model = copy.deepcopy(self.model)
+                self.best_auroc = auroc
+                self.best_epoch = self.current_epoch
+            print(' Validation at Epoch ' + str(self.current_epoch), "with AUROC "+ str(auroc) + " AUPRC " + str(auprc))
+        auroc, auprc, f1, sensitivity, specificity, accuracy, thred_optim = self.test(dataloader="test")
+        test_lst = ["epoch " + str(self.best_epoch)] + list(map(float2str, [auroc, auprc, f1, sensitivity, specificity,
+                                                                            accuracy, thred_optim]))
+        self.test_table.add_row(test_lst)
+        print('Test at Best Model of Epoch ' + str(self.best_epoch) + " with AUROC "
+              + str(auroc) + " AUPRC " + str(auprc) + " Sensitivity " + str(sensitivity) + " Specificity " +
+              str(specificity) + " Accuracy " + str(accuracy) + " Thred_optim " + str(thred_optim))
+        self.test_metrics["auroc"] = auroc
+        self.test_metrics["auprc"] = auprc
+        self.test_metrics["sensitivity"] = sensitivity
+        self.test_metrics["specificity"] = specificity
+        self.test_metrics["accuracy"] = accuracy
+        self.test_metrics["thred_optim"] = thred_optim
+        self.test_metrics["best_epoch"] = self.best_epoch
+        self.test_metrics["F1"] = f1
+        self.save_result()
+
+        return self.test_metrics, self.best_epoch
+
+    def save_result(self):
+        if self.config.TRAIN.SAVE_MODEL:
+            torch.save(self.best_model.state_dict(), os.path.join(self.output_dir, f"best_epoch_{self.best_epoch}.pth"))
+        state = {
+            "train_epoch_loss": self.train_loss_epoch,
+            "val_epoch_loss": self.val_loss_epoch,
+            "test_metrics": self.test_metrics,
+            "config": self.config
+        }
+        torch.save(state, os.path.join(self.output_dir, f"result_metrics.pt"))
+        if self.config.TRAIN.SAVE_LAST_EPOCH:
+            torch.save(self.model.state_dict(), os.path.join(self.output_dir, f"last_epoch.pth"))
+
+        val_prettytable_file = os.path.join(self.output_dir, "valid_markdowntable.txt")
+        test_prettytable_file = os.path.join(self.output_dir, "test_markdowntable.txt")
+        train_prettytable_file = os.path.join(self.output_dir, "train_markdowntable.txt")
+        with open(val_prettytable_file, 'w') as fp:
+            fp.write(self.val_table.get_string())
+        with open(test_prettytable_file, 'w') as fp:
+            fp.write(self.test_table.get_string())
+        with open(train_prettytable_file, "w") as fp:
+            fp.write(self.train_table.get_string())
+
+    def train_epoch(self):
+        self.model.train()
+        loss_epoch = 0
+        r=0
+        num_batches = len(self.train_dataloader)
+        loop = tqdm(self.train_dataloader, colour='#ff4777', file=sys.stdout)
+        loop.set_description(f'Train Epoch[{self.current_epoch}/{self.epochs}]')
+        for step, batch in enumerate(loop):
+            self.optim.zero_grad()
+            self.step += 1
+            r += 1
+            input_drugs = batch['batch_inputs_drug'].to(self.device)
+            input_proteins = batch['batch_inputs_pr']['input_ids'].to(self.device)
+            pr_mask = batch['batch_inputs_pr']['attention_mask'].to(self.device)
+            labels = torch.tensor(batch['labels']).to(self.device)
+            drug_labels = batch['masked_drug_labels']
+            if drug_labels is not None:
+                inputs_drugs_m = batch['batch_inputs_drug_m'].to(self.device)
+                drug_labels = drug_labels.to(self.device)
+                output = self.model(input_drugs, input_proteins, pr_mask=pr_mask, masked_drugs=inputs_drugs_m)
+                b_loss = cross_entropy(output['logits'], labels)
+                mlm_loss = nn.CrossEntropyLoss(ignore_index=-1)(output['drug_mlm_logits'], drug_labels)
+                loss = b_loss + mlm_loss
+            else:
+                output = self.model(input_drugs, input_proteins, pr_mask=pr_mask)
+                loss = cross_entropy(output['logits'], labels)
+
+            loss.backward()
+            self.optim.step()
+            loss_epoch += loss.item()
+            loop.set_postfix(avg_loss=loss_epoch / r)
+
+        loss_epoch = loss_epoch / num_batches
+        return loss_epoch
+
+    def test(self, dataloader="test"):
+        y_label, y_pred = [], []
+        if dataloader == "test":
+            data_loader = self.test_dataloader
+        elif dataloader == "val":
+            data_loader = self.val_dataloader
+        else:
+            raise ValueError(f"Error key value {dataloader}")
+        loop = tqdm(data_loader, colour='#f47983', file=sys.stdout)
+        with torch.no_grad():
+            self.model.eval()
+            if dataloader == "val":
+                loop.set_description(f'Validation')
+            elif dataloader == "test":
+                loop.set_description(f'Test')
+            for step, batch in enumerate(loop):
+
+                labels = batch['labels']
+                input_proteins = batch['batch_inputs_pr']['input_ids'].to(self.device)
+                input_drugs = batch['batch_inputs_drug'].to(self.device)
+                pr_mask = batch['batch_inputs_pr']['attention_mask'].to(self.device)
+                if dataloader == "val":
+                    output = self.model(input_drugs, input_proteins, pr_mask=pr_mask)
+                elif dataloader == "test":
+                    output = self.best_model(input_drugs, input_proteins, pr_mask=pr_mask)
+
+                n = output['logits'][:, 1]
+                y_label = y_label + labels
+                y_pred = y_pred + n.tolist()
+        auroc = roc_auc_score(y_label, y_pred)
+        auprc = average_precision_score(y_label, y_pred)
+        if dataloader == "test":
+            fpr, tpr, thresholds = roc_curve(y_label, y_pred)
+            prec, recall, _ = precision_recall_curve(y_label, y_pred)
+
+            # Youden index for the optimal threshold
+            optimal_idx = np.argmax(tpr - fpr)
+            optimal_threshold = thresholds[optimal_idx]
+
+            y_pred_bin = (y_pred >= optimal_threshold).astype(int)
+
+            # confusion matrix
+            tn, fp, fn, tp = confusion_matrix(y_label, y_pred_bin).ravel()
+
+
+            acc = accuracy_score(y_label, y_pred_bin)
+            sensitivity = tp / (tp + fn)  # recall
+            specificity = tn / (tn + fp)
+            f1 = f1_score(y_label, y_pred_bin)
+            return auroc, auprc, f1, sensitivity, specificity, acc, optimal_threshold
+        else:
+            return auroc, auprc
+
+def binary_cross_entropy(n, labels):
+    loss_fct = torch.nn.BCELoss()
+    loss = loss_fct(n, labels.float())
+    return loss
+
+def cross_entropy(preds, targets, reduction='none'):
+    preds = torch.log(preds)
+    loss_f = nn.NLLLoss()
+    loss = loss_f(preds, targets.long())
+    return loss
+</code></pre>
+</div>
+
+</body>
+</html>
