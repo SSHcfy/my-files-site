@@ -2,6 +2,7 @@ import os
 import base64
 import sys
 from pathlib import Path
+import pdfminer
 
 # ---------- 配置 ----------
 FILES_DIR = "files"          # 存放原始文件的文件夹
@@ -40,19 +41,27 @@ FILE_BLOCK_TEMPLATE = """
 </div>
 """
 
+# def extract_pdf_text(filepath):
+#     """尝试用 PyPDF2 提取 PDF 文字"""
+#     try:
+#         from PyPDF2 import PdfReader
+#         reader = PdfReader(filepath)
+#         text = []
+#         for page in reader.pages:
+#             page_text = page.extract_text()
+#             if page_text:
+#                 text.append(page_text)
+#         return "\n".join(text)
+#     except ImportError:
+#         return "<span class='error'>需要安装 PyPDF2 才能提取文本，请运行: pip install PyPDF2</span>"
+#     except Exception as e:
+#         return f"<span class='error'>PDF 文本提取失败: {e}</span>"
 def extract_pdf_text(filepath):
-    """尝试用 PyPDF2 提取 PDF 文字"""
     try:
-        from PyPDF2 import PdfReader
-        reader = PdfReader(filepath)
-        text = []
-        for page in reader.pages:
-            page_text = page.extract_text()
-            if page_text:
-                text.append(page_text)
-        return "\n".join(text)
+        from pdfminer.high_level import extract_text
+        return extract_text(filepath)
     except ImportError:
-        return "<span class='error'>需要安装 PyPDF2 才能提取文本，请运行: pip install PyPDF2</span>"
+        return "<span class='error'>需要安装 pdfminer.six 才能提取文本，请运行: pip install pdfminer.six</span>"
     except Exception as e:
         return f"<span class='error'>PDF 文本提取失败: {e}</span>"
 
