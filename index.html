@@ -20,2162 +20,2226 @@
 <p>以下内容由脚本自动生成，供 DeepSeek 阅读。</p>
 
 <div class="file-block">
-  <div class="file-name">1.txt</div>
-  <pre><code>Article https://doi.org/10.1038/s41467-025-62235-6
+  <div class="file-name">Chen 等 - 2025 - Semi-inductive dataset construction and framework optimization for practical drug target interaction.txt</div>
+  <pre><code>Article https://doi.org/10.1038/s41467-025-66311-9
 
-Evidential deep learning-based drug-target
+Semi-inductive dataset construction and
 
-interaction prediction
+framework optimization for practical drug
 
-Yanpeng Zhao 1,2,8, Yuting Xing3,8, Yixin Zhang 1,8, Yifei Wang1
+target interaction prediction with ScopeDTI
 
-,
-
-Mengxuan Wan1,2, Duoyun Yi1,4, Chengkun Wu 5,6, Shangze Li1
-
-, Huiyan Xu1,4,
-
-Hongyang Zhang1,4, Ziyi Liu1,4, Guowei Zhou1,7, Mengfan Li 1
-
-, Xuanze Wang1
+Yigang Chen 1,2,3,7, Xiang Ji 1,2,7, Ziyue Zhang1,2,7, Zihao Zhu1,2,7, Yuming Zhou1
 
 ,
 
-Zhengshan Chen1
+Chang Su1
 
-, Ruijiang Li 1
+, Yang-Chi-Dung Lin1,2,3,4, Hsi-Yuan Huang1,2,4, Kangping Wei1
 
-, Lianlian Wu 1,7, Dongsheng Zhao 1
+, Yi Lai1,2,
 
-,
+Ke Chen1,2, Xingqiao Lin1
 
-Peng Zan 2,4 , Song He 1 & Xiaochen Bo 1
+, Yangyi Zhang1
 
-Drug-target interaction (DTI) prediction is a crucial component of drug dis￾covery. Recent deep learning methods show great potential in this field but
+, Jiehui Fu1
 
-also encounter substantial challenges. These include generating reliable con-
+, Yixian Huang 1,2,
 
-fidence estimates for predictions, enhancing robustness when handling novel,
+Shidong Cui1,2, Shih-Chung Yen1,2, Tao Zhang 3
 
-unseen DTIs, and mitigating the tendency toward overconfident and incorrect
+, Arieh Warshel 5 &
 
-predictions. To solve these problems, we propose EviDTI, a novel approach
+Hsien-Da Huang 1,2,3,4,6
 
-utilizing evidential deep learning (EDL) for uncertainty quantification in neural
+Deep learning-based drug-target interaction (DTI) prediction methods have
 
-network-based DTI prediction. EviDTI integrates multiple data dimensions,
+demonstrated strong performance; however, real-world applicability remains
 
-including drug 2D topological graphs and 3D spatial structures, and target
+constrained by limited data diversity and modeling complexity. To address
 
-sequence features. Through EDL, EviDTI provides uncertainty estimates for its
+these challenges, we propose SCOPE-DTI, a unified framework combining a
 
-predictions. Experimental results on three benchmark datasets demonstrate
+large-scale, balanced semi-inductive human DTI dataset with advanced deep
 
-the competitiveness of EviDTI against 11 baseline models. In addition, our
+learning modeling. SCOPE-DTI is constructed from 13 public repositories and
 
-study shows that EviDTI can calibrate prediction errors. More importantly,
+expands data volume by up to 100-fold compared to common benchmarks
 
-well-calibrated uncertainty information enhances the efficiency of drug dis￾covery by prioritizing DTIs with higher confident predictions for experimental
+such as the Human dataset. The SCOPE model integrates three-dimensional
 
-validation. In a case study focused on tyrosine kinase modulators, uncertainty￾guided predictions identify novel potential modulators targeting tyrosine
+protein and compound representations, graph neural networks, and bilinear
 
-kinase FAK and FLT3. These results underscore the potential of evidential deep
+attention mechanisms to effectively capture cross domain interaction patterns
 
-learning as a robust tool for uncertainty quantification in DTI prediction and its
+and outperform state-of-the-art methods across various DTI prediction tasks.
 
-broader implications for accelerating drug discovery.
+Additionally, SCOPE-DTI provides a user-friendly interface and database. We
 
-Drug discovery is the process of discovering drugs that can treat dis￾eases and improve human health. It involves multiple steps1,2
+further demonstrate its effectiveness by experimentally identifying anticancer
 
-, including
+targets of two bioactive natural compounds. By offering comprehensive data,
 
-target identification, compound screening, and lead optimization.
+advanced modeling, and accessible tools, SCOPE-DTI accelerates drug dis￾covery research.
 
-Identifying drug-target interactions (DTI) plays a crucial role in com￾pound screening3,4
+Identifying drug-target interactions (DTIs) is essential for drug dis￾covery, drug repurposing, toxicity prediction, and improving the
 
-. Although traditional biomedical measurements
+success rate of clinical trials1–4
 
-obtained from in vitro experiments are reliable, they come with sig￾nificant drawbacks, such as high costs and lengthy development
+. For decades, experimental approaches
 
-cycles, which significantly limit the pace of drug development5
+have dominated DTI identification due to their high accuracy and
+
+reliability5
+
+. However, their high cost and extensive time requirements
+
+limit scalability, especially considering the immense chemical and
+
+biological search spaces6
 
 .
 
-In silico methods for predicting DTIs, particularly deep learning
+The accumulation of extensive experimental datasets has enabled
 
-(DL) techniques, have received much attention for their potential to
+the development of data-driven computational methods7,8
 
-Received: 1 November 2024
+. Machine
 
-Accepted: 14 July 2025
+learning-based approaches leverage these large-scale datasets to learn
+
+and generalize interaction patterns, facilitating rapid and cost￾effective prediction of previously uncharacterized drug-target inter￾actions (DTIs). These computational models provide efficient predic￾tions, guiding experimental validation toward the most promising
+
+Received: 8 April 2025
+
+Accepted: 29 October 2025
 
 Check for updates
 
 1
 
-Academy of Military Medical Sciences, Beijing, China. 2
+School of Medicine, The Chinese University of Hong Kong, Shenzhen, Longgang District, Shenzhen, Guangdong, China. 2
 
-School of Medicine, Shanghai University, Shanghai, China. 3
+Warshel Institute for Computational
 
-Defense Innovation Institute, Academy of
+Biology, School of Medicine, The Chinese University of Hong Kong, Shenzhen, Longgang District, Shenzhen, Guangdong, China. 3
 
-Military Science, Beijing, China. 4
+Better Way Group—Chinese
 
-Shanghai Key Laboratory of Power Station Automation Technology, School of Mechatronics Engineering and Automation,
+University of Hong Kong (Shenzhen) Warshel Joint Laboratory for skin health and active molecule innovation, Longgang District, Shenzhen, Guangdong,
 
-Shanghai University, Shanghai, China. 5
+China. 4
 
-College of Computer Science and Technology, National University of Defense Technology, Changsha, Hunan, China. 6
+Guangdong Provincial Key Laboratory of Digital Biology and Drug Development, The Chinese University of Hong Kong, Shenzhen, Longgang District,
 
-Laboratory of Digitizing Software for Frontier Equipment, National University of Defense Technology, Changsha, Hunan, China. 7
+Shenzhen, Guangdong, China. 5
 
-Academy of Medical
+Department of Chemistry, University of Southern California, Los Angeles, CA, USA. 6
 
-Engineering and Translational Medicine, Tianjin University, Tianjin, China. 8
+Department of Endocrinology, Key
 
-These authors contributed equally: Yanpeng Zhao, Yuting Xing, Yixin Zhang.
+Laboratory of Endocrinology of National Health Commission, Peking Union Medical College Hospital, Chinese Academy of Medical Sciences & Peking Union
 
-e-mail: zanpeng@shu.edu.cn; hes1224@163.com; boxc@bmi.ac.cn
+Medical College, Beijing, People’s Republic of China. 7
 
-Nature Communications | (2025) 16:6915 1
+These authors contributed equally: Yigang Chen, Xiang Ji, Ziyue Zhang, Zihao Zhu.
+
+e-mail: huanghsienda@cuhk.edu.cn
+
+Nature Communications | (2025) 16:11509 1
 
 1234567890():,;
 
 1234567890():,;
 
-reduce drug development costs, shorten time and increase the success
+candidate interactions, thereby accelerating drug discovery and sig￾nificantly reducing associated costs9
 
-rate of new drugs6–9
+.
 
-. These methods can be broadly classified into
+Recent advances in deep learning have significantly advanced
 
-network-based methods and proteochemometrics (PCM)10. Network￾based methods integrate drug-target, drug-drug, and protein-protein
+computational DTI prediction. Proteochemometrics (PCM), a widely
 
-interactions, etc. multiple networks into a unified network10–12.
+used computational framework, represents drugs and targets as fea￾ture vectors to predict DTIs through supervised classification10.
 
-Recently, PCM methods have received increasing attention. PCM
+Embedding methods for molecules and proteins have rapidly evolved
 
-employs representations of drug and protein information to improve
+along two parallel fronts. Sequence-based approaches have advanced
 
-the accuracy of DTI predictions, and its performance largely depen￾dent on the effectiveness of molecular and protein representations13,14.
+from one-dimensional convolutional neural networks11,12 to powerful
 
-Typically, amino acid sequences of protein are typically used as input
+pre-trained foundation models (FM) like BERT that capture deep
 
-for proteins, while molecular graph and SMILES strings are commonly
+semantic context6,13,14. Concurrently, structure-awared methods have
 
-used as input for drugs. To obtain representation of proteins and
+progressed from 2D topological representations using graph neural
 
-drugs, convolutional neural networks (CNNs)15, recurrent neural net￾works (RNNs), graph neural networks (GNNs)16–18 and transformer
+networks (GNNs)15,16 to embeddings that explicitly model 3D spatial
 
-models19,20 are typically applied. A great deal of innovative work has
+arrangements17,18. Alongside these advances in representation, model
 
-been undertaken to predict interactions more effectively14.To improve
+architectures have evolved from simple multilayer perceptrons (MLPs)
 
-model interpretability and capture local interactions of drug-target,
+to interactive mechanisms like interaction maps19 and bilinear atten￾tion networks (BANs)15. These innovations have enabled state-of-the￾art models to achieve notable performance improvements on standard
 
-the gated cross-attention mechanisms have received more
+benchmarks, including BindingDB20,21, human22, and KIBA datasets23.
 
-attention21–24. To address the problem of small dataset sizes and
+However, substantial challenges remain when applying these
 
-incomplete representations in DTI prediction, pre-training models are
+models in practical settings. In practical drug discovery applications,
 
-emerging as a promising solution25–27. These models demonstrate
+accurately predicting interactions between previously uncharacter￾ized compounds and druggable targets is essential. Therefore, models
 
-excellent scalability and generalization capabilities across a wide range
+must demonstrate the ability to achieve reliable predictive perfor￾mance even when operating beyond the limitations of their training
 
-of prediction tasks28–32. To achieve more comprehensive and nuanced
+data. Chatterjee et al.24 categorize drug-target interaction (DTI) pre￾diction into three distinct scenarios: transductive, semi-inductive, and
 
-representations, many methods integrate multimodal techniques that
+inductive. The inductive scenario, where both drugs and proteins are
 
-combine different types of data33,34.
+absent from the training set, is crucial for previously uncharacterized
 
-Despite the significant advances achieved by DL in DTI prediction, its
+DTI discovery but remains highly challenging. Current state-of-the-art
 
-practical application still faces a major challenge: high probability pre￾dictions do not necessarily correspond to high confidence35,36. The root
+models under inductive conditions achieve only moderate predictive
 
-of this problem lies in the fundamental difference between DL models
+accuracy, with AUROC typically below 0.7 and correlation coefficients
 
-and human cognitive models37. Humans are able to dynamically adjust
+below 0.515,17, limiting their practical utility. Conversely, the transduc￾tive scenario, where both drugs and proteins are present in the training
 
-the confidence level according to the knowledge boundary, giving cer￾tain answers to familiar questions and explicitly expressing “uncertainty”
+set but their interactions are unknown, yields high performance but is
 
-about unknown domains. In contrast, traditional DL models generate
+often compromised by overfitting and dataset biases21,25, thus
 
-predictions for all inputs, including out-of-distribution and noisy sam￾ples. More critically, traditional DL models lack probability calibration
+restricting generalization to real-world tasks.
 
-ability and may produce high prediction probabilities even in low con-
+In contrast, the semi-inductive scenario-particularly the predic￾tion of interactions involving previously uncharacterized drugs against
 
-fidence situations. This phenomenon of “overconfidence” has the ten￾dency to introduce unreliable predictions into downstream processes,
+known proteins—offers significant potential compared to purely
 
-including the pushing of false positives into experimental validation, the
+inductive or transductive approaches17,24. Although current models
 
-omission of potentially active compounds in virtual screening, and even
+perform well in such scenarios, their success remains limited by the
 
-the designing of clinical trial protocols based on false predictions. These
+size and diversity of available data. Expanding and integrating existing
 
-situations not only lead to inefficient use of resources, but also have the
+datasets to encompass more druggable targets could substantially
 
-potential to delay the drug discovery process.
+enhance predictive accuracy and real-world applicability, enlightening
 
-Uncertainty quantification (UQ) methods can address above
+the practical value of the semi-inductive approach.
 
-challenge and thus improve the robustness of neural models in sci￾entific applications38–44, especially in the field of drug discovery. The
+In this work, we present SCOPE-DTI, a unified framework that
 
-core value of UQ is to provide a reliable basis for decision-making by
+enhances the practical utility of DTI prediction models. We construct a
 
-distinguishing between plausible predictions and high-risk predic￾tions. Typically UQ45,46 methods include Bayesian neural networks47
+large, well-balanced semi-inductive human DTI dataset by integrating
 
-and sampling-based48,49 methods. However, these methods typically
+data from 13 public repositories, expanding available training data
 
-rely on multiple random sampling to approximate the underlying
+20–100-fold compared to standard benchmarks20,21. Using this dataset,
 
-uncertainty function50–52, resulting in high computational costs and
+the SCOPE model incorporates three-dimensional structural embed￾dings, graph neural networks, and a bilinear attention mechanism to
 
-extended runtimes. This poses a significant limitation for large-scale
+capture cross-domain interaction patterns and achieve improved
 
-DTI prediction. Evidential deep learning (EDL) offers a promising
+predictive performance over state-of-the-art methods across diverse
 
-alternative that provides a direct way to learn about uncertainty
+tasks. In addition, we provide a user-friendly web interface and
 
-without relying on random sampling53,54. Furthermore, EDL can be
+searchable database to facilitate accessibility. We further demonstrate
 
-integrated into existing network structures without major archi￾tectural modifications. Several approaches have demonstrated the
+the effectiveness of SCOPE-DTI by experimentally validating pre￾viously uncharacterized anti-cancer targets of Ginsenoside Rh1 and
 
-potential of EDL in the field of drug discovery and development43,55–57.
-
-In this work, we propose an EDL-based DTI prediction framework
-
-(EviDTI). The framework utilizes pre-trained knowledge as well as
-
-multi-dimensional representations to enhance the model perfor￾mance. More importantly, EviDTI provides prediction confidence
-
-estimation by introducing EDL to help identify drug candidates that
-
-are most likely to be successful, thus reducing the risk and cost
-
-associated with false positives. The framework comprises three main
-
-components: a protein feature encoder, a drug feature encoder, and an
-
-evidence layer. In protein feature encoder, the protein language pre￾trained model ProtTrans30 is employed to extract protein sequence
-
-features. The light attention mechanism is then employed to provide
-
-insights into local interactions at the residue level. For drug features,
-
-2D graph representations are obtained using our previously proposed
-
-pre-trained model, MG-BERT58. Additionally, 3D features of drugs are
-
-encoded via geometric deep learning. The learned protein and drug
-
-representations are concatenated and fed into the evidential layer to
-
-obtain DTI probabilities and uncertainties. In a comprehensive eva￾luation across 11 DTI prediction models, EviDTI demonstrates com￾petitive performance. Moreover, we demonstrate that evidential￾based uncertainty can effectively calibrate prediction errors. This
-
-uncertainty information can accelerate drug discovery and reposi￾tioning by prioritizing DTIs with more confident predictions for
-
-experimental validation. By applying uncertainty-guided prediction in
-
-the discovery of potential tyrosine kinase modulators, EviDTI identifies
-
-potential new modulators targeting tyrosine kinase FAK and FLT3,
-
-highlighting the utility of EviDTI in drug discovery. By bridging the gap
-
-between prediction and reliability, EviDTI offers a trustworthy solution
-
-for DTI prediction. The source code is available at https://github.com/
-
-zhaoyanpeng208/EviDTI.
+Celastrol, underscoring its real-world applicability in drug discovery.
 
 Results
 
-Overview
+SCOPE dataset development
 
-We developed an EDL-based DTI prediction model, EviDTI. As shown in
+Our study aims to predict DTIs for previously uncharacterized com￾pounds within a semi-inductive framework, addressing the critical
 
-Fig. 1, the EviDTI framework consists of three main components: protein
+question: Given any previously uncharacterized active compound,
 
-feature encoder, drug feature encoder, and evidential layer. Given a drug￾target pair as input, the protein feature encoder utilizes the protein
+how can we accurately identify its binding targets across a compre￾hensive set of druggable proteins? To tackle this challenge, we con￾structed a large-scale, high-quality human-focused DTI dataset.
 
-sequence pre-training model ProtTrans as the initial encoder to generate
+As illustrated in Fig. 1A, we aggregated and curated data from 13
 
-an initial target representation. This representation undergoes further
+primary DTI repositories, integrating information from over 20 sour￾ces in total, including referenced datasets (Supplementary Table 1).
 
-feature extraction through the light attention (LA) module. In the drug
+Each dataset entry comprises a protein, a compound, and an interac￾tion label. Proteins were annotated using UniProt identifiers26, retain￾ing only human proteins, and categorized into pharmacological
 
-feature encoder, both 2D topological information and 3D structural
+families (e.g., GPCRs, kinases) according to the IUPHAR database27. To
 
-information of the drug are encoded. For the drug 2D topological graph,
+enable structural modeling, we generated 3D protein structures using
 
-an initial representation is derived using our previously proposed mole￾cule pre-training model MG-BERT36, which is subsequently processed by
+AlphaFold228. Compounds were annotated with identifiers from
 
-a 1DCNN. The 3D spatial structure of the drug is converted into an atom￾bond graph and a bond-angle graph, with the representation obtained
+PubChem29 and ChEMBL30, and their 3D structures were constructed
 
-through the GeoGNN module. The target and drug representation are
+using RDKit and optimized with the Merck Molecular Force Field
 
-then concatenated and fed into the evidential layer. The output of the
+(MMFF)31. Interaction labels were systematically assigned using stan￾dardized measurement-specific cutoff values derived from PubChem
 
-evidential layer is the parameter α, which is used to calculate the pre￾diction probability and the corresponding uncertainty value.
+Bioactivity data, classifying interactions as positive (1) or negative (0)
+
+(Supplementary Fig. 1; Supplementary Table 2). Additional details on
+
+labeling methods are described in Supplementary Note 1.
+
+Recognizing that target-level class imbalance—where certain
+
+proteins predominantly display interactions from one class—could
+
+bias semi-inductive predictions, we implemented a filtering approach
+
+(Fig. 1B). For proteins whose interactions exceeded 75% from a single
+
+class, we randomly removed interactions using stratified sampling,
+
+balancing the classes within a 50–75% range. Proteins with insufficient
+
+interactions or skewed class distributions were entirely excluded to
+
+maintain dataset integrity. Figure 1C illustrates that this filtering
+
+approach significantly mitigated imbalance, ensuring a more balanced
+
+distribution of interaction labels across targets (Supplementary Note 2
+
+and Supplementary Fig. 2 provide further details).
+
+To further assess the dataset’s relevance to the druggable pro￾teome, we analyzed its coverage of major pharmacological families
+
+(Fig. 1D). For kinases and nuclear hormone receptors (NHRs),
+
+SCOPE dataset demonstrates exceptional coverage, encompassing the
+
+vast majority of known proteins in these families, a feature largely
+
+preserved post-filtering. This high retention suggests a wealth of rich
+
+and relatively balanced interaction data for these well-studied targets.
+
+In contrast, while the initial dataset for ion channels (ICs) was sub￾stantial, the number of proteins was moderately reduced after filtering,
+
+indicating that some members suffer from sparser or highly skewed
+
+interaction data. Notably, the coverage for G-protein-coupled recep￾tors (GPCRs) is more limited, reflecting a comparative scarcity of
+
+public interaction data and underscoring GPCRs as a critical family
+
+warranting further investigation and data curation efforts.
+
+Finally, we quantitatively compared the resulting SCOPE dataset
+
+with widely used benchmarks (Fig. 1E), revealing a substantial increase
+
+in scale—20- to 100-fold more interactions, accompanied by sig￾nificantly more proteins and compounds. Detailed dataset statistics
+
+are summarized in Supplementary Table 3. Overall, to our knowledge,
+
+SCOPE represents the large, most balanced semi-inductive human DTI
+
+dataset available, providing a robust foundation for developing and
+
+validating predictive models for previously uncharacterized drug￾target interactions.
+
+SCOPE framework
+
+Figure 2 provides a schematic illustration of the proposed SCOPE-DTI
+
+framework for predicting drug-target interactions. The framework
+
+begins with the transformation of drug molecules and target proteins
+
+from the SCOPE dataset into their respective three-dimensional (3D)
+
+conformations, generated using RDKit for compounds and AlphaFold2
+
+for proteins. To effectively capture the complex structural features of
+
+both proteins and compounds, their 3D structures are encoded using
+
+heterogeneous graph neural networks (HGNNs)32,33 and geometric
+
+vector perceptrons (GVPs)17,34, respectively. The protein encoding
+
+Article https://doi.org/10.1038/s41467-025-66311-9
+
+Nature Communications | (2025) 16:11509 2
+
+module simultaneously encodes the sequential relationships among
+
+residues and their spatial neighborhood information captured via
+
+radius graphs constructed from residue coordinates. The compound
+
+encoding incorporates atom-specific features (atom type, charge,
+
+hybridization state) defined by DGL-LifeSci’s encoding scheme35, along
+
+with spatial coordinates representing their 3D structural information.
+
+Further details of these encoding methods are provided in Supple￾mentary Table 4.
+
+To account for the scale disparity between small molecules and
+
+large proteins, atom-level features were aggregated via global pooling
+
+BindingDB Dataset
+
+SCOPE Dataset
+
+B
+
+D
+
+Original
+
+Filtered
+
+ChEMBL
+
+PubChem ChEMBL BindingDB
+
+TTD DrugBank DrugCentral
+
+Pharos PROMISCUOUS PPRRROOMMIISSCCUUO...UUS20+ Sources
+
+Drug Target Interaction Data Sources
+
+UniProt Human Protein
+
+Annotation
+
+IUPHAR
+
+Pharmacological
+
+Target Family
+
+Annotation
+
+Protein 3D
+
+Structure Generated
+
+by Alphafold2
+
+PubChem Compound ID
+
+Annotation
+
+Compound
+
+3D Generation
+
+and
+
+MMFF 
+
+Optimization
+
+• IC50 < 10000 nM
+
+• Inhibition > 50 %
+
+• Ki < 10000 nM
+
+• Kd < 10000 nM
+
+And So On
+
+Criteria for DTI Labeling
+
+...
+
+SCOPE Original Dataset
+
+Multi-Source Integration
+
+SCOPE Filtered Dataset
+
+Mitigate target-level interaction imbalance
+
+A
+
+AF2DB
+
+RDKit
+
+C
+
+Protein i Protein i Negative
+
+Interactions
+
+Positive
+
+Interactions
+
+Drop
+
+Slight 
+
+Imbalance
+
+Severe
+
+Imbalance
+
+E No. Compounds No. Proteins No. Interactions Druggable Protein Coverage in SCOPE Dataset
+
+Fig. 1 | Overview of the SCOPE dataset construction pipeline and data char￾acteristics. A Schematic representation of the data integration and preprocessing
+
+steps used to construct the SCOPE dataset. Molecular structures were visualized
+
+using ChemDraw and Chem3D. The protein structures were visualized using
+
+PyMOL. B Strategy to mitigate target-level imbalance: for proteins dominated by
+
+one class, we randomly remove interactions to achieve balance; in extreme cases,
+
+we discard all of that protein’s interactions. C The effect of data filtering. The red
+
+and green distributions represent datasets before and after filtering, respectively.
+
+D The analysis of the coverage of different target protein families in the SCOPE
+
+dataset. E Comparison of data volume between SCOPE and previous datasets in
+
+terms of the number of compounds, targets, and interactions separately. Source
+
+data are provided as a Source Data file.
+
+Article https://doi.org/10.1038/s41467-025-66311-9
+
+Nature Communications | (2025) 16:11509 3 Compounds Compounds
+
+to generate fixed-size molecular representations for downstream
+
+processing. These pooled molecular vectors are then combined with
+
+the encoded protein representations and fed into a BAN. This network
+
+comprises a bilinear attention layer, followed by a bilinear pooling
+
+layer, enabling the model to capture cross-domain interactions
+
+between the drug and the target protein residues15. Ultimately, the
+
+combined representations are passed through an MLP classifier, which
+
+computes the final predictive score, representing the probability of a
+
+drug-target interaction.
+
+Evaluation strategies and metrics
+
+We evaluated the classification performance of our model using three
+
+publicly available datasets—BindingDB20,21, human22, and KIBA23—as
+
+well as our proprietary SCOPE dataset. Our evaluation simulates a real￾world scenario by adopting a strict semi-inductive framework, where
+
+models must predict interactions for previously uncharacterized
+
+compounds against a known set of target proteins (Fig. 3A). To achieve
+
+this, we partitioned datasets exclusively by compound, randomly
+
+assigning them to training, validation, and test sets (7:1:2 ratio). This
+
+approach guarantees that while the test set contains compounds
+
+unseen during training, the entire protein vocabulary remains con￾sistent across all data splits. Detailed information about the dataset
+
+splits is provided in Supplementary Note 3.
+
+We utilized the area under the receiver operating characteristic
+
+curve (AUROC) and the area under the precision-recall curve (AUPRC)
+
+as the primary metrics for assessing classification performance. Addi￾tionally, we reported accuracy, sensitivity, and specificity at the
+
+threshold corresponding to the optimal F1 score. To ensure robust￾ness, we performed at least five independent runs with different
+
+random seeds for each dataset split. The model that achieved the
+
+highest AUROC on the validation set was selected for final evaluation
+
+on the test set, and the performance metrics were then recorded.
 
 Performance comparison
 
-To evaluate the effectiveness of the EviDTI framework, we validated it
+A persistent challenge in DTI prediction is the risk of performance
 
-on three different experimental datasets: DrugBank, Davis59, and
+inflation from dataset biases. We first investigated the impact of target￾level class imbalance, a common issue where a target’s known inter￾actions are overwhelmingly positive or negative. To isolate the effect
 
-KIBA60. These datasets were randomly divided into training, validation
+of this bias, we conducted a controlled experiment on the BindingDB
 
-and test sets in a ratio of 8:1:1. We used seven evaluation metrics:
+dataset with the SCOPE model (Fig. 3B). The original, imbalanced data
 
-accuracy (ACC), recall, precision, Matthews correlation coefficient
+yielded an optimistic AUROC, which was further inflated under a “label
 
-(MCC), F1 score, area under the ROC curve (AUC), and area under the
+polarization" control that intentionally maximized this bias. In con￾trast, our proposed “label balancing" filter produced a more realistic
 
-precision-recall curve (AUPR) to assess model performance. EviDTI is
+AUROC baseline. Importantly, both the label-balanced and label￾polarized datasets were constructed to have a similar overall class
 
-compared with three traditional machine learning methods, including
+balance and sample size, confirming that the observed performance
 
-Random Forests (RFs)61, Support Vector Machines (SVMs)62 and Naive
+gap stems directly from the per-target bias distribution rather than
 
-Bayesian (NB)63. These methods have been widely used in DTI pre￾diction and are important benchmarks for evaluating the performance
+dataset size or global imbalance. This result validates our filtering
 
-of our proposed method. In addition, EviDTI is compared with eight
+strategy as essential for a fair and rigorous evaluation, which we
 
-state-of-the-art models in the field, including DeepConv-DTI19,
+applied to all subsequent experiments.
 
-GraphDTA64, MolTrans20, HyperAttention17, TransformerCPI65,
+Having established a robust evaluation framework, we next
 
-GraphormerDTI24, AIGO-DTI66, and DLM-DTI27.
+assessed whether our newly constructed SCOPE dataset provides a
 
-The performance results on the DrugBank dataset are shown in
+superior benchmark. We performed a head-to-head comparison
 
-Table 1. EviDTI shows robust overall performance on all metrics,
+focused on the kinase target family, pitting the widely used KIBA
 
-especially in terms of precision (81.90%), and competitive values for
+dataset against our SCOPE Kinase dataset (Fig. 3C). This ensures that
 
-Accuracy (82.02%), MCC (64.29%) and F1 score (82.09%). Besides, we
+performance differences are attributable to data quality and scale
 
-evaluated EviDTI on the Davis and KIBA datasets, which are particularly
+within a similar biological context. Across all tested models, perfor￾mance on the SCOPE Kinase dataset was consistently and significantly
 
-Article https://doi.org/10.1038/s41467-025-62235-6
+Fig. 2 | Schematic representation of the SCOPE model for drug-target interac￾tion prediction. The SCOPE model integrates 3D structural information of proteins
 
-Nature Communications | (2025) 16:6915 2
+and compounds to predict drug-target interactions. To capture intricate structural
 
-challenging due to class imbalance. The performance results on the
+features, the 3D protein structures and molecular graphs are encoded using het￾erogeneous graph neural networks (HGNNs) and geometric vector perceptrons
 
-Davis and KIBA datasets are presented in Tables 2 and 3, respectively.
+(GVPs) with global pooling. These encoded representations are then processed
 
-Specifically, on the KIBA dataset, EviDTI outperformed the best base￾line model by 0.6% in accuracy, 0.4% in precision, 0.3% in MCC, 0.4% in
+through a bilinear attention network, which consists of a bilinear attention layer
 
-F1 score, and 0.1% in AUC. On the Davis dataset, EviDTI exceeds 0.8% in
+followed by bilinear pooling, to generate a joint representation that models local
 
-accuracy, 0.6% in precision, 0.9% in MCC, 2% in F1 score, 0.1% in AUC,
+interactions between the drug and the target protein. The final predictive score is
 
-and 0.3% in AUPR. These results demonstrate the robustness and
+computed by a fully connected classification layer, representing the likelihood of
 
-superior performance of EviDTI when dealing with complex and
+an interaction. Molecular structures were visualized using ChemDraw and Chem3D.
 
-unbalanced datasets. Overall, EviDTI achieved robust and superior
-
-performance on three benchmark datasets, which further validates the
-
-effectiveness and competitiveness of EviDTI.
-
-In order to evaluate the effectiveness of the EviDTI in predicting
-
-novel DTIs, we introduced a cold-start scenario following the practice
-
-established by Wang et al12. Supplementary Table 2 demonstrates the
-
-performance of EviDTI under the cold-start scenario. EviDTI outper￾forms other models in several evaluation metrics, especially in accu￾racy (79.96%), recall (81.20%), F1 score (79.61%) and MCC value
-
-(59.97%). Its AUC value (86.69%) is slightly lower than TransformerC￾PI’s 86.93%. These results demonstrate that EviDTI is a competitive
-
-model in cold start scenarios.
-
-Multidimensional feature fusion and pre-trained models lead to
-
-better prediction performance
-
-Two ablation studies were conducted to explored the impact of dif￾ferent combinations of dimensional features and the use of pre-trained
-
-model features on DTI prediction.
-
-Firstly, we compare the performance of models using single￾dimensional features with models using a multidimensional feature
-
-K
-
-i 1 i
-
-k pk
-
-K
-
-i 1 i
-
-K u
-
-Interaction prediction
-
-Evidential uncertainty
-
-Evidential layers
-
-Fig. 1 | The flowchart of EviDTI. For a given drug-target pair, the protein feature
-
-encoder employs the pre-trained ProtTrans for initial target representation, further
-
-refined by a light attention (LA) module. The drug feature encoder processes the 2D
-
-topology and 3D structure representations. The 2D representation is derived from
-
-the pre-trained MG-BERT model and processed by 1D CNN. The 3D structure
-
-representation is obtained via the GeoGNN. These representations are con￾catenated and fed into the evidence layer, which outputs parameter α for predic￾tion probability and uncertainty.
-
-Article https://doi.org/10.1038/s41467-025-62235-6
-
-Nature Communications | (2025) 16:6915 3
-
-fusion strategy. Supplementary Figs. 1 and 2 illustrate the various
-
-feature combination architectures used. Specifically, three multi￾dimensional feature combinations were evaluated on three datasets:
-
-EviDTI: combines the 2D topological representation and the 3D
-
-structural representation of small molecules of small molecules, and
-
-protein sequence representation.
-
-EviDTI w/o drug 3D: utilizes 2D topological representation of
-
-small molecules and the protein sequence representation.
-
-EviDTI w/o drug 2D: utilizes 3D structural representation of small
-
-molecules and the protein sequence representation.
-
-As shown in Fig. 2a and Supplementary Table 3, the EviDTI model
-
-consistently outperformed the other two models across all three
-
-Table 1 | Comparison results of EviDTI and baselines on the DrugBank dataset
-
-DrugBank Accuracy (std) Recall (std) Precision (std) MCC (std) F1 score (std) AUC (std) AUPR (std)
-
-RF 71.07 (1.34) 73.08 (0.95) 76.92 (1.42) 51.23 (1.54) 74.94 (0.92) 83.03 (0.65) 84.78 (0.67)
-
-NB 52.90 (1.13) 87.99 (1.77) 51.71 (1.01) 42.34 (3.24) 65.13 (0.89) 60.76 (1.24) 59.37 (1.77)
-
-SVM 78.02 (1.92) 75.04 (2.93) 73.86 (2.14) 53.87 (1.29) 74.39 (1.40) 82.02 (1.62) 82.85 (1.49)
-
-DeepConv-DTI 79.50 (0.22) 80.45 (0.21) 79.30 (0.64) 57.91 (0.61) 79.87 (0.62) 86.69 (0.22) 86.28 (0.13)
-
-GraphDTA 77.69 (0.11) 78.77 (1.13) 76.92 (1.05) 55.41 (0.63) 77.83 (1.18) 83.62 (0.25) 83.26 (0.18)
-
-MolTrans 78.48 (0.17) 81.97 (0.23) 77.01 (0.35) 55.65 (0.62) 79.41 (0.73) 85.98 (0.64) 86.67 (0.12)
-
-HyperAttention 80.85 (0.23) 88.16 (0.15) 77.09 (0.17) 62.32 (0.42) 82.26 (0.33) 89.94 (0.14) 88.95 (0.15)
-
-TransformerCPI 79.01 (0.24) 76.26 (0.36) 80.47 (0.34) 58.09 (0.22) 78.31 (0.38) 84.62 (0.33) 84.23 (0.28)
-
-GraphormerDTI 80.22 (1.07) 82.05 (1.23) 79.11 (0.91) 60.48 (2.16) 80.55 (1.02) 88.63 (1.02) 88.36 (0.99)
-
-AIGO-DTI 81.88 (1.37) 82.28 (2.69) 81.26 (0.36) 63.80 (2.78) 81.74 (1.40) 88.62 (1.02) 88.44 (1.65)
-
-DLM-DTI 82.13 (0.27) 82.54 (1.91) 81.68 (1.56) 66.32 (0.55) 81.08 (0.56) 90.48 (0.48) 90.20 (0.60)
-
-EviDTI 82.02 (0.43) 82.28 (1.03) 81.90 (0.58) 64.29 (1.05) 82.09 (0.74) 88.87 (0.73) 88.45 (1.51)
-
-The best results are highlighted in bold, while the second-best results are underlined. Five independent replications of each method were performed (n = 5). Data are expressed as means (std).
-
-Table 2 | Comparison results of EviDTI and baselines on the KIBA dataset
-
-KIBA Accuracy (std) Recall (std) Precision (std) MCC (std) F1 score (std) AUC (std) AUPR (std)
-
-RF 88.41 (0.34) 64.84 (2.48) 70.57 (2.30) 63.21 (1.67) 67.59 (1.37) 91.05 (0.38) 76.05 (1.04)
-
-NB 52.92 (0.83) 71.72 (1.77) 24.22 (1.40) 24.56 (3.24) 36.21 (1.47) 65.92 (0.78) 35.51 (0.94)
-
-SVM 81.72 (0.46) 3.87 (0.76) 66.40 (2.91) 5.24 (1.34) 7.32 (0.92) 73.27(0.56) 43.38 (1.60)
-
-DeepConv-DTI 89.05 (0.32) 68.87 (0.43) 80.52 (0.34) 70.21 (0.28) 74.24 (0.63) 90.67 (0.17) 80.42 (0.62)
-
-GraphDTA 88.92 (0.11) 59.42 (3.23) 77.53 (2.03) 67.51 (0.52) 71.24 (0.81) 91.41 (0.12) 77.61 (0.74)
-
-MolTrans 88.91 (0.16) 73.53 (0.23) 70.42 (0.34) 67.62 (0.22) 71.94 (0.16) 92.32 (0.33) 79.49 (0.64)
-
-HyperAttention 89.33 (0.12) 79.63 (0.24) 68.93 (0.18) 70.12 (0.22) 74.21 (0.35) 93.51 (0.17) 81.41 (0.23)
-
-TransformerCPI 87.01 (0.18) 63.12 (0.32) 66.93 (0.34) 66.2 (0.26) 69.12 (0.23) 88.81 (0.18) 70.81 (0.16)
-
-GraphormerDTI 86.54 (0.85) 85.40 (1.68) 60.63 (1.84) 64.03 (1.10) 70.87 (0.89) 92.58 (0.25) 81.95 (0.91)
-
-AIGO-DTI 90.68 (0.32) 73.65 (0.77) 76.77 (1.12) 69.46 (0.97) 75.17 (0.77) 93.06 (0.26) 83.91 (0.77)
-
-DLM-DTI 88.25 (0.25) 68.10 (2.15) 69.86 (0.90) 61.72 (0.78) 68.94 (0.87) 91.14 (0.39) 75.63 (0.41)
-
-EviDTI 91.27 (0.07) 70.77 (1.69) 80.90 (1.32) 70.44 (0.78) 75.48 (0.83) 93.57 (0.35) 83.03 (0.98)
-
-The best results are highlighted in bold, while the second-best results are underlined. Five independent replications of each method were performed (n = 5). Data are expressed as means (std).
-
-Table 3 | Comparison results of the EviDTI and baselines on the Davis dataset
-
-Davis Accuracy (std) Recall (std) Precision (std) MCC (std) F1 score (std) AUC (std) AUPR (std)
-
-RF 84.48 (0.60) 65.01 (1.47) 80.70 (1.87) 64.12 (2.11) 72.01 (1.49) 89.64 (0.68) 83.04 (1.68)
-
-NB 67.53 (0.92) 61.70 (1.82) 47.78 (1.95) 45.21 (1.68) 53.85 (1.72) 70.11 (1.39) 58.43 (2.09)
-
-SVM 82.13 (0.59) 59.70 (1.57) 76.96 (2.19) 60.23 (1.45) 67.24 (1.61) 87.85 (0.78) 80.16 (1.65)
-
-DeepConv-DTI 86.41 (0.27) 72.14 (0.33) 77.85 (0.44) 64.53 (0.35) 74.89 (0.64) 91.83 (0.20) 83.87 (0.62)
-
-GraphDTA 81.72 (0.19) 53.01 (1.76) 74.33 (1.45) 62.42 (0.67) 71.83 (0.82) 85.92 (0.43) 74.31 (0.74)
-
-MolTrans 83.61 (0.18) 76.31 (0.34) 68.87 (0.24) 62.91 (0.13) 72.40 (0.17) 89.84 (0.22) 80.26 (0.66)
-
-HyperAttention 86.61 (0.14) 78.01 (0.23) 75.41 (0.16) 67.54 (0.28) 74.21 (0.22) 92.01 (0.14) 83.92 (0.13)
-
-TransformerCPI 82.22 (0.16) 68.82 (0.38) 68.81 (0.37) 64.21 (0.24) 72.41 (0.25) 87.72 (0.16) 76.71 (0.18)
-
-GraphormerDTI 84.81 (0.84) 83.78 (2.52) 68.43 (2.18) 65.22 (1.84) 75.28 (1.43) 91.24 (0.74) 84.31 (1.48)
-
-AIGO-DTI 86.19 (0.79) 72.55 (2.94) 78.01 (2.11) 65.72 (1.96) 75.12 (1.52) 92.01 (0.97) 84.81 (1.10)
-
-DLM-DTI 85.66 (0.47) 74.08 (2.50) 75.26 (1.92) 64.68 (1.27) 74.62 (1.03) 91.30 (0.35) 82.48 (0.86)
-
-EviDTI 87.40 (1.08) 72.93 (1.93) 81.17 (2.94) 68.40 (2.78) 76.81 (2.03) 92.10 (0.78) 85.07 (2.12)
-
-The best results are highlighted in bold, while the second-best results are underlined. Five independent replications of each method were performed (n = 5). Data are expressed as means (std).
-
-Article https://doi.org/10.1038/s41467-025-62235-6
-
-Nature Communications | (2025) 16:6915 4
-
-datasets in most evaluation metrics. This result indicates that multi￾dimensional feature fusion significantly enhances DTI prediction
-
-performance.
-
-To explore the benefits of using pre-trained models as initial
-
-feature extractors, we compared the performance of architectures
-
-with and without pre-trained models. Supplementary Figs. 3 and 4
-
-depict the different ablation architectures examined:
-
-EviDTI-Protein Integer: replaces the protein pre-training model
-
-ProtTrans with integer coding and a CNN for feature extraction.
-
-EviDTI-Drug 2D GCN: replaces the small molecule pre-training
-
-model MG-BERT with a two-layer GCN.
-
-Figure 2b and Supplementary Table 4 illustrate the performance
-
-of these different model frameworks across the three datasets. It is
-
-evident that the architectures utilizing pre-trained models for initial
-
-feature extraction outperformed those that did not across all metrics.
-
-This finding underscores the value of leveraging pre-trained models to
-
-enhance DTI prediction performance.
-
-Evidential deep learning provides a reliable measure of
-
-uncertainty
-
-Following the evaluation of EviDTI’s prediction performance on the
-
-benchmark dataset, it becomes critical to ensure that the model can
-
-provide reliable estimates of uncertainty in the DTI prediction task. To
-
-assess whether the model can effectively assess prediction uncer￾tainty, two hypotheses are proposed and tested:
-
-1. Samples with correct predictions should have low uncertainty,
-
-while samples with incorrect predictions should have high
-
-uncertainty.
-
-2. Samples with lower uncertainty should exhibit higher prediction
-
-accuracy.
-
-These assumptions are based on the EDL principle, which views
-
-learning as a process of acquiring evidence. The more evidence
-
-accumulated, the greater the confidence and the higher the probability
-
-of prediction.
-
-First, the correlation between uncertainty and prediction results
-
-was assessed on the three benchmark datasets. Figure 3a illustrates
-
-the relationship between the sample prediction results and the
-
-uncertainty values. The horizontal axis divides the sample into true
-
-positives (TP, true value 1, predicted value 1), false positives (FP, true
-
-value 0, predicted value 1), false negatives (FN, true value 1, predicted
-
-value 0) and true negatives (TN, true value 0, predicted value 0). The
-
-vertical axis represents the distribution of uncertainty values for
-
-each group.
-
-Fig. 2 | The results of two ablation experiments. a Performance comparison on
-
-the DrugBank, KIBA and Davis datasets using single-dimensional features and
-
-multidimensional feature fusion strategies. Five independent replications of each
-
-method were performed (n = 5). Data are expressed as means ± std. b Performance
-
-comparison of feature extraction with and without pre-trained models on Drug￾Bank, KIBA, and Davis datasets. Five independent replications of each method were
-
-performed (n = 5). Data are expressed as means ± std. Source data are provided as a
+The protein structures were visualized using PyMOL. Source data are provided as a
 
 Source Data file.
 
-Article https://doi.org/10.1038/s41467-025-62235-6
+Article https://doi.org/10.1038/s41467-025-66311-9
 
-Nature Communications | (2025) 16:6915 5
+Nature Communications | (2025) 16:11509 4
 
-In all benchmark datasets, the incorrectly predicted samples (FP
+higher. This finding is further supported by a scaling analysis, which
 
-and FN) typically exhibit higher uncertainty than the correctly pre￾dicted samples. However, there were performance differences
+shows a clear positive correlation between data volume and model
 
-between the datasets. Fewer outliers were observed in the Davis and
+performance (Supplementary Fig. 3 and Supplementary Note 4). This
 
-KIBA datasets than in the DrugBank dataset, which may be due to the
+demonstrates that the increased scale and richer data curated in
 
-fact that the DrugBank dataset contains a wider range of proteins and
+SCOPE dataset translate directly into a higher-quality benchmark,
 
-small molecules with complex and diverse structures. In contrast, the
+enabling more powerful and generalizable models.
 
-Davis and KIBA datasets contain a more limited diversity of proteins
+We then expanded our analysis to dissect the robustness of dif￾ferent model architectures under this rigorous framework. Our
 
-and small molecules of kinases.
+benchmark suite included classical models (SVM)36, simple deep
 
-We further analyzed whether the model provides a reliable mea￾sure of uncertainty in the cold-start dataset. Supplementary Fig. 5
+learning models (MLP)37, and four state-of-the-art architectures:
 
-demonstrates the relationship between sample prediction results and
+MolTrans19 and TransformerCPI25, which use simple transformers;
 
-uncertainty values in the cold-start dataset. The incorrectly predicted
+BertDTI14, which leverages pre-trained FMs; and DrugBAN15, which
 
-samples (FP and FN) in the cold-start dataset also typically exhibit
+introduced a Bilinear Attention Network (BAN). As shown in Fig. 3D,
 
-higher uncertainty than the correctly predicted samples.
+the balancing filter and semi-inductive split acted as powerful differ￾entiators. The simpler transformer-based models (MolTrans, Trans￾formerCPI) proved brittle, suffering substantial performance
 
-Next, we examined the relationship between sample uncertainty
+degradation after filtering, indicating their reliance on dataset arti￾facts. The FM-based BertDTI showed greater resilience on larger
 
-and prediction accuracy to validate the second hypothesis. Samples
+datasets but still experienced a notable performance drop on smaller
 
-were ranked according to their uncertainty values and divided into 20
+ones like Human or BindingDB. In contrast, models employing the BAN
 
-confidence intervals, each containing 5% of the total samples. For
+architecture—DrugBAN and our SCOPE model—demonstrated
 
-example, the first interval includes the top 5% of samples with the
+exceptional stability across all datasets, regardless of size. This high￾lights the critical role of the BAN module in achieving robust DTI
 
-lowest uncertainty, while the second interval comprises samples with
+prediction.
 
-an uncertainty ranking of 6–10%. The accuracy within each interval was
+To provide a definitive quantitative assessment, we summarized
 
-then calculated separately, as shown in Fig. 3b.
+the average AUROC of all models across the eight filtered datasets
 
-Figure 3b shows that within the confidence interval with the
+(Table 1). The results chronicle a clear and consistent performance
 
-lowest uncertainty (top 5 per cent), i.e., the region with the highest
+improvement driven by advances in both molecular encoding and
 
-confidence in the model’s predictions, the accuracy exceeds 90 per
+feature fusion technologies. The technological progression reveals
 
-Fig. 3 | Evidential deep learning provides a favorable measure of uncertainty.
+several key insights. While a basic transformer architecture like Mol￾Trans did not offer a significant leap in peak performance over a simple
 
-a A Mann–Whitney test was performed on the error distribution of uncertainty in
+Deep MLP, it provided a notable improvement in training stability and
 
-samples classified as TP, FP, FN, TN for three datasets: DrugBank (n = 3312 obser￾vations), KIBA (n = 11,639 observations), and Davis (n = 2,583 observations). The
+convergence consistency, albeit at the cost of substantially increased
 
-central line indicates the median, the box bounds indicate the 25th and 75th per￾centiles, whiskers extend to the minimum and maximum values (within 1.5×
+computational overhead. Performance and stability only improved
 
-interquartile range), and outliers are shown as individual points. All tests were two￾sided, with no adjustments made for multiple comparisons. Asterisks indicate
+with the introduction of richer, graph-based embeddings, as seen in
 
-statistically significant differences based on Mann–Whitney U test p-values:
+TransformerCPI. A major leap in performance, however, came with the
 
-****p ≤ 0.0001. Significance is indicated as follows: For DrugBank dataset, TP vs. FN
+advent of more sophisticated methods. The pre-training and fine￾tuning paradigm of BertDTI, the advanced fusion mechanism of
 
-has a p-value of 1.055e-10, FP vs. TN has a p-value of 4.954e-74, TP vs. FP has a p￾value of 1.546e-51, FN vs. TN has a p-value of 1.895e-26. For KIBA dataset, TP vs. FN
+DrugBAN, and our 3D encoding with a BAN module each propelled
 
-has a p-value of 9.713e-30, FP vs. TN has a p-value of 4.954e-74, TP vs. FP has a p￾value of 1.546e-51, FN vs. TN has a p-value of 1.895e-26. For Davis dataset, TP vs. FN
+model performance to a level of practical applicability. Within this top
 
-has a p-value of 3.502e-09, FP vs. TN has a p-value of 5.662e-45, TP vs. FP has a p￾value of 6.667e-21, FN vs. TN has a p-value of 7.434e-40. b Test data sorted and
+tier, the benefits of 3D structural information became decisive,
 
-divided into 20 confidence intervals based on uncertainty. All tests were two-sided
+allowing SCOPE model to achieve state-of-the-art performance across
 
-with no adjustments made for multiple comparisons. The ACC was calculated for
+Fig. 3 | Evaluating DTI model performance changes on multiple datasets under
 
-samples within each confidence interval. Five independent replications (n = 5) were
+a bias-aware, semi-inductive setting. A The semi-inductive compound evaluation
 
-performed in each data set. Data are presented as mean ± std. Source data for the
+framework. B Target-level class imbalance inflates model performance. Our Label
 
-figure are shown in Supplementary Data. Source data are provided as a Source
+Balancing (pink) corrects this bias, providing a realistic benchmark, while a Label
 
-Data file.
+Polarization control (yellow) confirms that high AUROC on unfiltered data is an
 
-Article https://doi.org/10.1038/s41467-025-62235-6
+artifact. C Models achieve superior AUROC on the larger, filtered SCOPE Kinase
 
-Nature Communications | (2025) 16:6915 6
+dataset compared to the standard KIBA benchmark, demonstrating the value of our
 
-cent for all three benchmark datasets, and is close to 100 per cent for
+curated data. D Overall performance before and after filtering. Filtering reveals the
 
-the KIBA and Davis datasets. In contrast, within the confidence interval
+brittleness of simpler models, whereas advanced models, especially our 3D-aware
 
-with the highest uncertainty (96–100%), the accuracy ranged between
+SCOPE model, demonstrate robust and superior performance on the more realistic
 
-0.5 and 0.6. This suggests that the model effectively communicates
+filtered datasets. Each bar represents the mean performance over n = 5 indepen￾dent training runs performed with different random seeds and dataset splits. Error
 
-uncertainty and therefore these predictions should be treated with
+bars indicate ± standard deviation (SD). Central values correspond to the mean.
 
-caution. In conclusion, the predictive accuracy of the model decreases
+Source data are provided as a Source Data file.
 
-progressively with increasing uncertainty.
+Article https://doi.org/10.1038/s41467-025-66311-9
 
-These findings suggest that the uncertainty estimates generated
+Nature Communications | (2025) 16:11509 5
 
-by EviDTI can be an important tool for calibrating predictions. It also
+all eight datasets. A comprehensive analysis, including additional
 
-implies that EviDTI can help reduce the risks and costs associated with
+metrics, is provided in the Supplementary Notes and Supplementary
 
-incorrect DTI predictions, providing important support for the
+Tables. Notably, this robust superiority is achieved with remarkable
 
-decision-making process in drug discovery.
+efficiency; our model’s computational requirements are comparable to
 
-Uncertainty prediction accelerates drug discovery
+those of DrugBAN and significantly lower than resource-intensive FM￾based methods (Supplementary Note 5). These findings confirm that
 
-After validating that EviDTI can effectively calibrate predictions, we
+by integrating 3D structural information with an advanced attention
 
-explored its application in real-world scenarios. In practical settings,
+mechanism, SCOPE model establishes a state-of-the-art system that is
 
-model performance in high-confidence intervals is particularly
+not only highly accurate and robust but also computationally efficient.
 
-important. Therefore, we aimed for the model to achieve good
+Ablation study
 
-uncertainty calibration in these intervals and to guide the identifica￾tion of new DTIs.
+We conducted an ablation study to assess the individual contributions
 
-First, we used the out-of-fold (OFR)45,67 to examine the predictive
+of protein encoding, compound encoding, and backbone design to the
 
-performance of the model at high confidence intervals. By setting
+overall performance of the SCOPE model. Table 2 summarizes the key
 
-thresholds ranging from 0.1 to 0.01, we compare the performance of
+findings, highlighting the critical role each module plays in the model’s
 
-the models at different confidence levels. To elucidate the role of
+effectiveness, with detailed experimental results provided in Supple￾mentary Table 7.
 
-evidential uncertainty, we compare two approaches: a probability￾based approach that does not use uncertainty and an uncertainty￾based approach that uses evidential uncertainty to obtain prob￾abilities. Figure 4a–c shows the OFR (based on five random data splits)
+To evaluate the impact of compound encoding using the 3D
 
-for the different methods on each dataset.
+Graph GVP, we constructed three variants of the SCOPE model, each
 
-According to Fig. 4a–c and Supplementary Table 5, the
+employing different compound encoding methods: 1D fingerprint, 2D
 
-probability-based approach achieves higher prediction performance
+Graph15, and 3D Graph GVP without global pooling, where the max￾imum atom size was set to 300. The results demonstrate that
 
-at lower thresholds. As the threshold increases, the OFR of both
+increasing the representational dimension of the compounds led to a
 
-approach decreases, with the uncertainty-based approach decreasing
+significant improvement in model performance. Notably, the inclusion
 
-more significantly. The uncertainty-based method has a lower OFR on
+of pooled molecular encoding resulted in an over 1% performance
 
-all three datasets when the threshold is below 0.02. This suggests that
+gain, highlighting the critical role of pooling techniques in enhancing
 
-the predictive performance of EviDTI in high confidence intervals is
+molecular representations. Notably, our analysis shows that the choice
 
-higher than that of the method without EDL because it provides better
+of compound encoder has a negligible impact on the overall compu￾tational cost (Supplementary Note 5).
 
-uncertainty calibration.
+For protein encoding, we conducted a comparative analysis of our
 
-Next, we conducted several case studies to illustrate how uncer￾tainty can improve prediction reliability. As shown in Fig. 4e, for some
+proposed 3D Graph HGNN architecture against two alternative 1D
 
-DTIs, probability-based methods yield incorrect predictions with high
+methods: One-hot encoding and a CNN-based approach15. Our 3D
 
-prediction probabilities that may mislead experimental validation. In
+architecture leverages protein structures derived from AlphaFold; we
 
-contrast, uncertainty-based methods identify these predictions as
+chose this path because we posit that incorporating 3D information is a
 
-unreliable by assigning a high uncertainty score. This ability to convey
+crucial step towards creating more physically realistic and accurate
 
-prediction uncertainty is critical to avoid misguidance.
+models, a strategic choice we elaborate on in Supplementary Note 6.
 
-While our experiments were trained and validated on the same
+The ablation results revealed a nuanced performance landscape. The
 
-datasets (with similar sample and feature distributions), real-world
+1D CNN-based encoding performed surprisingly well, achieving results
 
-challenges involve predicting unseen DTIs, where the distribution
+comparable to our 3D design and even outperforming it on the F1
 
-differs from the training data. EDL’s ability to assess uncertainty in such
+score. However, our 3D Graph HGNN architecture maintained a dis￾tinct advantage in both AUROC and AUPRC, the primary metrics for
 
-cases is essential for making informed decisions about prediction
+this task. This suggests that while 1D methods can effectively capture
 
-reliability.
+sequence-level patterns, the 3D design unlocks access to critical
 
-To conduct this study, we turned to external datasets to assess the
+structural information that ultimately leads to superior predictive
 
-potential of evidence uncertainty in predicting unseen samples. We
+power. This performance gain from 3D features, however, comes with
 
-constructed an independent test set of all new drugs and their targets
+a computational trade-off. As we dissect in detail in Supplementary
 
-approved by the US Food and Drug Administration in 202268 to ensure
+Note 5, this is primarily an I/O overhead from loading the large struc￾tural embeddings, rather than a model complexity issue.
 
-that these drugs did not appear in the training set, as detailed in
+Finally, we examined the impact of the BAN layer within the
 
-Methods. A total of 24 pairs of drug-target interactions and 24 pairs of
+backbone. Remarkably, removing the BAN layer caused a substantial
 
-randomly generated negative interactions were collected for model
+drop in performance, bringing it to levels comparable to DrugBAN,
 
-performance testing. These newly reported drugs typically have novel
+which utilizes a 1D CNN and a 2D Graph for protein and compound
 
-backbones and targets that occupy different regions of chemi￾cal space.
+encoding. This underscores the significance of both the encoding
 
-We compared two ranking strategies for DTI identification: (1)
+strategies and the backbone design in achieving optimal model per￾formance. The efficiency of the BAN module itself ensures that the
 
-ranking based on predicted probabilities (probabilities-based rank￾ing), and (2) ranking based on uncertainty scores (uncertainty-based
+primary computational trade-off lies within the data encoding, not the
 
-Fig. 4 | Evidential deep learning helps reduce the risk of false predictions in
+fusion architecture.
 
-decision-making. a Comparison of OFR between uncertainty-based and
+In summary, the ablation study confirms the critical contributions
 
-probability-based frameworks on DrugBank dataset at different thresholds. Five
+of each module in the SCOPE model, validating the importance of its
 
-independent replications of each method were performed (n = 5). Data are
+overall design and its role in improving performance.
 
-expressed as means ± std. b Comparison of OFR between uncertainty-based and
+Webserver and database
 
-probability-based frameworks on the KIBA dataset at different thresholds. Five
+To enhance accessibility and usability, we have developed a webserver
 
-independent replications of each method were performed (n = 5). Data are
+and database for the SCOPE framework, accessible at https://awi.cuhk.
 
-expressed as means ± std. c Comparison of OFR between uncertainty-based and
+edu.cn/SCOPE/. The platform allows users to input a SMILES string of a
 
-probability-based frameworks on the Davis dataset at different thresholds. The line
+compound to perform search or prediction tasks. In search mode, the
 
-represents the mean OFR, and the shaded area indicates the standard deviation.
+server identifies and returns all compounds from the SCOPE dataset
 
-Five independent replications of each method were performed (n = 5). Data are
+with a structural similarity greater than 0.9 to the input molecule,
 
-expressed as means ± std. d Hit rates of the Top20 ranked predictions determined
+Table 1 | Average AUROC performance of SCOPE and six baseline models across eight filtered datasets
 
-by uncertainty ranking strategies and probability ranking strategies. Five inde￾pendent replications of each method were performed (n = 5). Data are expressed as
+SVM Deep MLP MolTrans TransformerCPI BertDTI DrugBAN SCOPE
 
-means ± std. e Case study. Column interaction is the true label of the DTIs. Column
+Method 1D+SVM 1D+MLP 1D+transformer 2D+transformer FM+MLP 2D+BAN 3D+BAN
 
-Uncertainty-based is the predicted probability based on the uncertainty method
+BindingDB 0.600 ± 0.102 0.711 ± 0.104 0.560 ± 0.029 0.622 ± 0.008 0.748 ± 0.022 0.865 ± 0.018 0.888 ± 0.013
 
-and the predicted label, with the uncertainty given by the model in parentheses.
+Human 0.581 ± 0.151 0.785 ± 0.026 NaN 0.676 ± 0.037 0.760 ± 0.023 0.854 ± 0.041 0.877 ± 0.043
 
-Column Probability-based is the predicted probability of the probability-based
+KIBA 0.560 ± 0.051 0.766 ± 0.016 0.682 ± 0.055 0.640 ± 0.012 0.811 ± 0.010 0.798 ± 0.008 0.819 ± 0.013
 
-method and the predicted labels. Source data are provided as a Source Data file.
+Kinase NaN 0.607 ± 0.123 0.713 ± 0.020 0.805 ± 0.022 0.824 ± 0.012 0.862 ± 0.020 0.885 ± 0.025
 
-Article https://doi.org/10.1038/s41467-025-62235-6
+GPCR NaN 0.707 ± 0.054 0.649 ± 0.011 0.649 ± 0.005 0.865 ± 0.003 0.856 ± 0.028 0.882 ± 0.022
 
-Nature Communications | (2025) 16:6915 7
+NHR NaN 0.688 ± 0.137 0.444 ± 0.051 0.614 ± 0.035 0.853 ± 0.007 0.848 ± 0.021 0.872 ± 0.035
 
-ranking). Hit rates are used to evaluate these strategies, which reflect
+IC NaN 0.792 ± 0.019 0.492 ± 0.010 0.638 ± 0.020 0.838 ± 0.004 0.841 ± 0.013 0.862 ± 0.021
 
-the proportion of true DTIs correctly identified with minimal false
+Total NaN 0.533 ± 0.072 NaN 0.717 ± 0.006 0.855 ± 0.004 0.857 ± 0.005 0.875 ± 0.014
 
-positives. We first select the top-ranked prediction and calculate the
+The comparison spans from sequence-based (1D) and graph-based (2D) methods to more advanced approaches using Foundation Models (FM) and 3D structures with different feature fusion
 
-hit rate under that ranking. Then, the ranking thresholds are gradually
+methods, demonstrating the effectiveness of incorporating higher-dimensional structural information (Best, Second Best).
 
-increased and the hit rates of the two ranking strategies are computed
+Table 2 | Ablation study on the filtered SCOPE dataset (averaged over five random runs)
 
-at each threshold. Figure 4d shows the hit rate curves determined by
+Protein encoding Compound encoding Backbone AUROC AUPRC F1
 
-these two ranking strategies. Uncertainty-based ranking achieves a
+3D Graph HGNN 1D Fingerprint BAN+MLP 0.829 ± 0.012 0.841 ± 0.015 0.771 ± 0.019
 
-100% hit rate for Top3 predictions and a hit rate of over 80% for Top10
+3D Graph HGNN 2D Graph BAN+MLP 0.859 ± 0.015 0.873 ± 0.015 0.785 ± 0.016
 
-predictions. In contrast, the probability-based ranking achieves a 100%
+3D Graph HGNN 3D Graph GVP no Pooling BAN+MLP 0.860 ± 0.014 0.874 ± 0.014 0.786 ± 0.015
 
-hit rate only for the Top1 prediction and exhibits greater volatility for
+1D Onehot 3D Graph GVP BAN+MLP 0.827 ± 0.016 0.846 ± 0.017 0.758 ± 0.012
 
-the Top3 prediction, indicating a lack of robustness in its model pre￾dictions. The above results illustrate that uncertainty-based rankings
+1D CNN 3D Graph GVP BAN+MLP 0.873 ± 0.008 0.871 ± 0.007 0.806 ± 0.010
 
-reduce false positives, suggesting that evidential uncertainty can
+3D Graph HGNN 3D Graph GVP MLP 0.859 ± 0.024 0.857 ± 0.025 0.789 ± 0.026
 
-reduce false positives in top DTIs.
+3D Graph HGNN 3D Graph GVP BAN+MLP 0.875 ± 0.014 0.888 ± 0.013 0.803 ± 0.016
 
-It is worth noting that the performance of EviDTI on external
+The first three models evaluate the compound embedding design, followed by two models assessing the protein embedding design. The impact of the Bilinear Attention Network (BAN) layer is
 
-datasets (based on standard assessment metrics) is not impressive. In
+shown in the subsequent model. The final model integrates all components of the SCOPE design (Best, Second Best).
 
-addition, the study investigates whether UQ enhances the overall
+Article https://doi.org/10.1038/s41467-025-66311-9
 
-prediction performance in comparison to non-uncertainty-based
+Nature Communications | (2025) 16:11509 6
 
-models. The performance of model with UQ integration and the
+calculated using RDKit. In prediction mode, the input molecule is
 
-model without UQ integration was compared across three benchmark
+paired with all proteins in the SCOPE library, providing interaction
 
-datasets. The model without UQ integration has the same architecture
+predictions with semi-inductive accuracy. Additionally, the complete
 
-but does not use the evidential layer. As shown in Supplementary
+SCOPE dataset is available for direct download from the website.
 
-Fig. 6, the model with UQ integration performs comparably to the
+Detailed information about the web development process and user
 
-model without UQ integration respect to the standard evaluation
+instructions can be found in Supplementary Note 8 and Supplemen￾tary Fig. 4.
 
-metrics. However, uncertainty information remains critical. The pri￾mary objective of DTI identification is to maximize the chances of
+Model interpretability
 
-discovering a true DTI by prioritizing high-confidence predictions
+As shown in Fig. 4A, prediction accuracy improves progressively with
 
-rather than exhaustively testing all possibilities. Incorporating uncer￾tainty into DTI screening can improve hit rates, reduce false positives,
+an increasing number of recorded protein interactions, highlighting
 
-and increase the efficiency of drug discovery by focusing experimental
+the critical importance of sufficient DTI data for robust model training.
 
-validation on the most reliable predictions.
+Proteins with limited known interactions exhibit considerable varia￾bility in predictive performance, whereas accuracy stabilizes at
 
-In summary, these findings demonstrate that EviDTI, by quantifying
+approximately 0.8-0.9 as interaction data expands.
 
-uncertainty, offers a promising solution for improving the reliability of
+To further explore this relationship, we examined four repre￾sentative proteins (Fig. 4B). Proteins O43826 and P42224, character￾ized by fewer known interactions, displayed lower predictive accuracy.
 
-predictions and the efficiency of screening in drug-target discovery.
+In contrast, proteins P46095 and P28482, benefiting from richer
 
-Application in multi-target tyrosine kinase modulators research
+datasets, achieved consistently higher accuracy. Interaction embed￾dings derived from the BAN attention module were analyzed using
 
-Tyrosine kinases are a critical class of enzymes that regulate cell sig￾naling and play a central role in cancer therapy by driving proliferation
+UMAP38 for dimensionality reduction and OPTICS39 for clustering.
 
-and survival pathways69,70. Tyrosine kinase modulators have been
+Proteins with extensive interaction data (P46095 and P28482)
 
-widely used to regulate these kinase by binding to their phosphor￾ylation sites. However, the efficacy of single-target tyrosine kinase
+demonstrated clear, distinct clusters, indicating that the model effec￾tively captures meaningful binding features. Conversely, sparse inter￾action data for O43826 and P42224 resulted in indistinct or no
 
-modulators is frequently constrained due to the complexity. Addi￾tionally, single-target inhibitors frequently induce drug resistance,
+observable clusters, reflecting difficulties in recognizing consistent
 
-diminishing their clinical utility71. Multi-target tyrosine kinase mod￾ulators offer a promising solution by regulating multiple cancer￾associated kinases simultaneously, disrupting the tumor signaling
+binding patterns.
 
-network and improving therapeutic efficacy.
+A deeper analysis of docking results for the GPCR protein P46095
 
-We investigated the potential of EviDTI for the discovery of novel
+(Fig. 4C) revealed that clusters identified by the model correspond to
 
-multi-targeted tyrosine kinase regulators. Initially, the efficacy of
+chemically distinct binding modes within the canonical binding
 
-EviDTI in predicting interactions between tyrosine kinases and tyr￾osine kinase modulators was validated. Subsequently, EviDTI was
+pocket. Specifically, interactions in clusters 1, 2, and 4 commonly
 
-applied to screen for new multi-targeted regulators and evaluated
+involved residues 79, 128, 132, 145, 219, 220, 312, and 315, while unique
 
-them by in vitro experiments.
+residues 295 and 304 characterized cluster 1, and residue 141 was
 
-Firstly, we validated the performance of EviDTI based on patent.
+distinctive for cluster 2. These findings confirm that our model cap￾tures nuanced and chemically relevant features governing ligand
 
-Specifically, the interaction data between two Lenvatinib analogs (LYD-
+specificity.
 
-2-45 and LYD-2-49) and 11 tyrosine kinase targets was obtained from
+Further examination of proteins with relatively low predictive
 
-the patent (Grant No. CN 116751161 A). A total of 22 drug-target pairs
+accuracy (Fig. 4D) revealed additional complexity. Protein O43826,
 
-were collected, including 20 positive interactions (confirmed interac￾tions) and 2 negative interactions (non-interactions). The probabilities
+despite an accuracy of around 0.7, had five known ligands adopting
 
-and uncertainties of these drug-target pairs were obtained using
+significantly different binding poses within the same pocket, compli￾cating the identification of consistent patterns. Similarly, protein
 
-EviDTI, which was trained on the DrugBank database. The predicted
+P42224 (accuracy <0.6) had limited ligand binding in various orienta￾tions and distinct pockets, presenting significant modeling challenges.
 
-results are shown in Supplementary Table 6, EviDTI gave correct pre￾dictions for 16 drug-target pairs.
+Collectively, these analyses emphasize the necessity of sufficient
 
-Secondly, we validated the performance of EviDTI based on the
+and diverse interaction data to enable accurate predictions of drug￾target interactions. They also illustrate the interpretative capability of
 
-literature. To perform this validation, we collected 67 known tyrosine
+our model, highlighting its ability to identify both global and ligand￾specific binding features critical for understanding molecular inter￾actions. For further methodological details and additional analyses,
 
-kinase targets from literatures and 51 potential tyrosine kinase mod￾ulators from the Targetmol-Tyrosine Kinase Modulators Library72 (see
+see the Supplementary Note 7.
 
-METHODS for details). The uncertainty score and probability of
+Efficient target discovery for bioactive natural compounds using
 
-interactions between the above kinases and regulators were obtained
+SCOPE-DTI
 
-using the model trained on DrugBank dataset, and the predictions
+Natural products have historically served as an important source of
 
-were ranked according to the uncertainty score. The predictive per￾formance of the EviDTIs was validated in three aspects. The first aspect
+therapeutic agents and continue to garner significant attention in
 
-is to validate how many predicted DTIs with the lowest uncertainty
+Fig. 4 | Interpretability analysis of the model. A Relationship between predictive
 
-score have been reported in literature. As shown in Supplementary
+performance and the number of known interactions per protein. As more known
 
-Table 7, among the top 10 predicted DTIs, two DTIs were validated in
+interactions are identified, accuracy stabilizes around 0.8-0.9, whereas fewer
 
-the literature (Interaction between Flumatinib mesylate and c-Kit
+known interactions lead to greater variability. B UMAP-OPTICS clustering of BAN
 
-[Rank 6, Uncertainty value = 0.0419]; Interaction between Flumatinib
+attention vectors for four representative proteins: two with robust predictive
 
-mesylate and Bcr-Abl [Rank 10, Uncertainty value = 0.0429]73). The
+performance (P46095 and P28482) and two with lower accuracy (O43826 and
 
-second aspect is to validate how many literature-reported DTIs
+P42224). Proteins enriched with interaction data (P46095 and P28482) exhibit clear
 
-between tyrosine kinase modulators and tyrosine kinase targets are
+clustering, suggesting that the model captures common binding features. In con￾trast, proteins with limited data (O43826 and P42224) do not show discernible
 
-predicted by EviDTI. A total of 27 DTIs were identified between 67
+clusters. C Docking analysis of ligands binding to P46095, highlighting shared and
 
-tyrosine kinase targets and 51 tyrosine kinase modulators. The 27 DTIs
+unique interaction residues across distinct ligand clusters. Unique critical residues
 
-have been obtained from multiple literature sources. Supplementary
+are marked in blue and yellow, and universally important residues are shown in
 
-Table 8 shows the results of the predictions made using EviDTI. Among
+purple, indicating both global and cluster-specific binding determinants. Protein
 
-the 27 known DTIs, 21 DTIs were predicted by EviDTI. 10 out of 21
+structure was visualized using PyMOL. D Analysis of proteins with relatively lower
 
-predicted DTIs have high confidence (the uncertainty score less than
+predictive accuracy. Although O43826 achieves an accuracy of about 0.7, its five
 
-0.1). The third aspect is to validate how many DTIs between drugs in
+known ligands—despite targeting the same pocket—adopt highly divergent poses,
 
-the top 10 predicted DTIs and their literature-reported targets could
+impeding a clear consensus. In the case of P42224 (accuracy <0.6), the small
 
-be predicted by EviDTI. We collected the drugs in the top 10 predicted
+number of known ligands not only bind in differing orientations but also occupy
 
-DTIs and their all literature-reported targets, totally 10 DTIs between
+distinct pockets, challenging the model’s predictive capability. Source data are
 
-these drugs and their all targets. The results of these predictions are
+provided as a Source Data file.
 
-displayed in Supplementary Table 9. Among these 10 DTIs, 7 DTIs were
+Article https://doi.org/10.1038/s41467-025-66311-9
 
-predicted by EviDTI, 4 out of 7 predicted DTIs have high confidence
+Nature Communications | (2025) 16:11509 7
 
-(the uncertainty score less than 0.1). This analysis shows that EviDTI
+modern drug discovery40. These compounds often possess complex
 
-performs well in predicting DTIs reported in the literature, and in
+chemical scaffolds and exert their biological effects not through a
 
-particular shows significant potential in the discovery of tyrosine
+single, high-affinity target, but by modulating a network of targets with
 
-kinase modulators.
+moderate affinities to produce a systems-level response. This poly￾pharmacological profile, while therapeutically advantageous, makes
 
-Thirdly, based on EviDTI’s predictions for interactions between 67
+their target identification a formidable challenge, rendering them ideal
 
-tyrosine kinase targets and 51 potential modulators, the most pro￾mising interactions (lowest uncertainty scores) were selected for
+test cases for advanced predictive models like SCOPE-DTI. We there￾fore selected two representative anti-cancer natural products for our
 
-experimental validation. We focused on two key tyrosine kinases tar￾gets (FAK and FLT3). For each kinase, the seven interactions with the
+validation study: Ginsenoside Rh1, a major in vivo metabolite of the
 
-highest confidence (lowest uncertainty score) between these targets
+widely studied ginsenosides41–43, and Celastrol, a potent bioactive
 
-and potential modulators were prioritized for experimental validation.
+compound from Tripterygium wilfordii known for its strong anti￾cancer effects and multi-target mechanism44. As a first step, we eval￾uated the cytotoxic effects of Rh1 and Celastrol on HepG2 cells using
 
-These interactions were validated using ADP-Glo™ Kinase Assay Kit.
+the CCK-8 assay. As shown in Fig. 5A and Supplementary Table 8, the
 
-For the FAK kinase experiment, we selected PF-562271 as the positive
+IC50 value of Rh1 was determined to be 32.04 μM. Celastrol exhibited
 
-control. In our experimental system, the 50% effective concentration
+substantially higher potency, with IC50 value of 2.53 μM, confirming
 
-of this compound was 2.91 ± 0.47 nM, which is comparable to the
+that both compounds significantly inhibit HepG2 cell proliferation.
 
-previously reported kinase inhibition activity (FAK: 1.5 nM)74. As shown
+Having established their inhibitory effects, we next utilized the
 
-in Fig. 5b, Tyrphostin 975 and Vodobatinib76 exhibited an inhibition of
+SCOPE framework to predict potential protein targets for both com￾pounds. As depicted in the workflow in Fig. 5B, Rh1 and Celastrol were
 
-FAK activity with the 50% effective concentration of 35.7 ± 3.4 nM and
+computationally screened against all candidate proteins in our data￾base, and the SCOPE model ensemble ranked the potential interac￾tions. From the top 10 ranked proteins for each compound, we applied
 
-85.7 ± 8.2 nM, respectively. Also, Flumatinib mesylate73 inhibited FAK
+two stringent filtering criteria to prioritize candidates for validation: (1)
 
-activity with a 50% effective concentration of 14.9 ± 2.1 nM (Supple￾mentary Table 10a and Supplementary Fig. 7a–d). For the FLT3 kinase
+inclusion of targets with reported anti-cancer relevance45, and (2)
 
-experiment, sorafenib are used as the positive control. The 50%
+confirmation of protein expression in HepG2 cells via the Human
 
-effective concentration of sorafenib in our system was 51.7 ± 8.47 nM,
+Protein Atlas (HPA)46. This refinement process yielded three high￾confidence candidates for Rh1 (PRKAA2/AMPK, RELA/p65, and
 
-which is comparable to literature value (FLT3: 58 ± 20 nM)77. As shown
+AKR1B10) and three for Celastrol (NR4A1/Nur77, CYP3A5, and
 
-in Fig. 5c, Tyrphostin 975 and Vodobatinib76 activated FLT3 activity with
+AKR1B10). Notably, the interaction between Celastrol and NR4A1 has
 
-the 50% effective concentration 1265.9 ± 244.6 nM and
+been recently validated in the literature47; therefore, we excluded it
 
-406.8 ± 74.5 nM, respectively (Supplementary Table 10b and Supple￾mentary Fig. 7e–g).
+from our subsequent biophysical assays, focusing our efforts on the
 
-In summary, EviDTI demonstrated its potential in identifying
+remaining five previously uncharacterized pairs.
 
-novel multi-target tyrosine kinase modulators, not only by predictively
+To experimentally confirm these computational predictions, we
 
-validating the targets of existing drugs, but also by experimentally
+first employed the cellular thermal shift assay combined with Western
 
-validating its effectiveness in improving the efficiency of drug dis￾covery and reducing the risk of development.
+blot (CETSA-WB) as a primary screen for direct physical engagement in
 
-Interpretability of light attention
+a cellular context. HepG2 cells were treated with each compound or a
 
-EviDTI provides an additional advantage by offering residue-level
+vehicle control (DMSO) and subjected to a temperature gradient (40
 
-insights and elucidating key factors in drug design. The light attention
+to 74 ∘
 
-Article https://doi.org/10.1038/s41467-025-62235-6
+C). As shown in Supplementary Fig. 5, a clear thermal stabiliza￾tion was observed for four of the five tested pairs: Rh1-p65, Rh1-
 
-Nature Communications | (2025) 16:6915 8
+AKR1B10, Celastrol-CYP3A5, and Celastrol-AKR1B10. In contrast, the
 
-module facilitates this capability by enabling visualization of the con￾tribution of each amino acid to the final predicted outcome.
+Rh1-AMPK interaction did not exhibit a significant thermal shift and
 
-Firstly, a visualization case study demonstrated the relationship
+was thus excluded from further validation. To corroborate these
 
-between attention weights and binding residues. Four DTI pairs were
+findings, we then performed Isothermal Dose-Response CETSA (ITDR￾CETSA) for the four positive hits. The results, shown in Fig. 5C,
 
-randomly selected from the DrugBank dataset, and their tertiary
+demonstrate clear, dose-dependent stabilization for all four pairs,
 
-structures were downloaded from the PDB database. The PDB IDs of
+providing strong qualitative evidence of direct physical binding in situ.
 
-these complexes are 1y91, 1d6n, 1czh, and 1z83, respectively. Attention
+Finally, to obtain a definitive, quantitative measure of these
 
-values were mapped to these structures and visualized using PyMOL
+interactions, we performed Bio-Layer Interferometry (BLI) assays. The
 
-(Fig. 6). In Fig. 6, the binding pockets of proteins and small molecules
+results, presented in Fig. 5D, provide conclusive evidence of direct
 
-are visualized, showcasing residues with high attentional values.
+binding with clear sensorgrams and excellent fitting statistics. The
 
-Across all cases, residues with high attention values coincide with the
+measured dissociation constants (Kd) were 3.19 ± 0.04 μM for Rh1-
 
-binding site, underscoring its importance in predicting and validating
+Fig. 5 | Experimental validation of SCOPE-DTI-predicted targets for natural
 
-the attention mechanism’s efficacy.
+products Ginsenoside Rh1 and Celastrol. A Viability of HepG2 cells after 24-h
 
-Overall, the case study findings demonstrate the interpretability
+treatment with Ginsenoside Rh1 (top) and Celastrol (bottom), measured by CCK-8
 
-of the model and are expected to reveal previously unexplored local
+assay. Data represent the mean ± SD from six biological replicates, normalized to
 
-interactions, providing opportunities to mine hidden knowledge.
+controls. B The target identification workflow. SCOPE-DTI predicted Top 10 targets
 
-These findings could guide strategies to help develop drug targets.
+for each compound, which were then filtered by cancer relevance and expression in
 
-To further explore the interpretability of the model, all known DTI
+HepG2 cells to select final candidates. Molecules were visualized using Chem3D.
 
-complex structures appearing in the DrugBank dataset were collected
+* PRKAA2 (AMPK) was excluded after failing the initial CETSA screen. ** The
 
-from the PDB database. The degree of correspondence between the
+Celastrol-NR4A1 (Nur77) interaction was previously validated in the literature.
 
-residues with the highest attention value and the binding site was also
+C Isothermal dose-response CETSA (ITDR-CETSA) showing increased thermal
 
-evaluated using the binding sites-hit ratio.
+stability of target proteins in HepG2 cell lysates upon drug treatment at 64 ∘
 
-Binding sites hit ratio =
+C,
 
-total number of binding sites in the top N% of attention scores
+indicating direct binding. β-actin and GAPDH served as loading controls. Repre￾sentative blots are shown. Each experiment was independently repeated three
 
-total number of binding sites
+times with similar results. Uncropped blots are provided in the Source Data file.
 
-Specifically, the residues were first ranked according to their
+D Bio-Layer Interferometry (BLI) confirming direct binding and quantifying affi-
 
-attention value, and the top N% residues were selected to calculate the
+nities. The calculated dissociation constants (Kd) for all four validated pairs are in
 
-binding sites hit ratio. A true binding site is defined as residue whose
+the micromolar range, meeting our model’s <10 μM success criterion. Kd values are
 
-Euclidean distance from the drug is within 4 Å of any atom.
+mean ± standard error, calculated from kinetic parameter fitting. Source data are
 
-The binding sites hit ratio at different thresholds is reported in
+provided as a Source Data file. Additional fitting parameters, including Rmax and
 
-Table 4 and Supplementary Fig. 8. When the number of true binding
+chi2 values, are also available in the Source Data file.
 
-sites was used as the threshold value, the binding sites hit ratio was
+Article https://doi.org/10.1038/s41467-025-66311-9
 
-0.125, and more than 70% of the binding sites ranked in the top 50% of
+Nature Communications | (2025) 16:11509 8
 
-the attention values. These results suggest that confidence in the
+AKR1B10, 1.02 ± 0.01 μM for Rh1-p65, 2.41 ± 0.03 μM for Celastrol￾AKR1B10, and 2.07 ± 0.03 μM for Celastrol-CYP3A5. All measured affi-
 
-interpretability of protein sequences may be lacking because 1D pro￾tein sequences (used as inputs for protein information in our model)
+nities are well within the <10 μM cutoff used by our model, confirming
 
-do not necessarily indicate the 3D conformation and location of the
+them as successful predictions. In total, including the previously vali￾dated Celastrol-NR4A1 interaction (Kd ≈ 292 nM)47, five out of the six
 
-binding pocket. However, the results for primary protein sequences
+prioritized candidate targets were confirmed, corresponding to a
 
-are encouraging, and it is reasonable to assume that further incor￾poration of 3D protein information into the modeling framework will
+success rate of over 80%. This high success rate, which closely aligns
 
-ultimately improve the model’s interpretability of the drug-target
+with the accuracy metrics from our large-scale computational bench￾marks, powerfully demonstrates the reliability and real-world applic￾ability of the SCOPE-DTI framework for discovering previously
 
-interaction network.
+uncharacterized targets of bioactive compounds. We also assessed the
+
+performance of our baseline models on these validated pairs. SCOPE￾DTI was the only model to successfully rank all targets within the top
+
+10, demonstrating its superior real-world applicability. A detailed
+
+breakdown of each model’s ranking performance is provided in Sup￾plementary Table 9.
 
 Discussion
 
-Although current deep learning models have made significant pro￾gress in DTI prediction, they typically lack the ability to provide con-
+In this study, we introduced SCOPE-DTI, a previously uncharacterized
 
-fidence estimates for predictions. This limitation seriously affects the
+framework developed to enhance the practical utility of deep learning￾based drug-target interaction (DTI) prediction. By constructing the
 
-effectiveness of these models in real-world applications, where deci￾sion making often requires a clear understanding of the reliability of
+large semi-inductive human DTI dataset to date and incorporating
 
-the predicted results. To bridge the gap between predictive models
+robust target-level data balancing, we have established a more reliable
 
-and practical applications, we present EviDTI, a novel framework that
+foundation for evaluating model performance under real-world con￾ditions. Our approach, which leverages three-dimensional structural
 
-integrates evidential-based deep learning. This method not only pre￾dicts DTI with high accuracy, but also provides reliable quantification
+representations of both proteins and compounds within an attention￾based architecture, demonstrated superior predictive performance
 
-of uncertainty, which enhances the practicality and reliability of the
+and structural interpretability across multiple benchmarks. We further
 
-model. This is important for advancing the field of drug discovery as it
+showcased SCOPE-DTI’s practical applicability by experimentally
 
-is directly related to the success and cost-effectiveness of experiments.
+identifying and validating previously uncharacterized anti-cancer tar￾gets for two bioactive natural products. To foster broader adoption,
 
-Fig. 5 | Application of EviDTI in the discovery of multi-target tyrosine kinase
+we have made our model and curated dataset publicly accessible via a
 
-modulators. a The validation framework on multi-target tyrosine kinase mod￾ulators. Initially, the validation was carried out using the data reported in the
+user-friendly web interface.
 
-patents. Two lenvatinib analogs with 11 known targets were collected from the
+While the case studies in this manuscript focused on identifying
 
-patents to conduct this validation. Subsequently, the validation was carried out
+anti-cancer targets, the potential applications of SCOPE-DTI extend far
 
-using the data reported in the literature. The uncertainty score and probability of
+beyond traditional drug discovery. Bioactive natural compounds are
 
-interactions between the 67 tyrosine kinase targets and 51 tyrosine kinase mod￾ulators were predicted via EviDTI. Finally, two targets of interest were selected from
+ubiquitous, influencing human health through everyday consumables
 
-the 67 targets collected above. Based on the uncertainty for these two targets and
+such as foods48, dietary supplements49, and skin care50. AI-driven target
 
-51 modulators, the interactions with lowest uncertainty between these two targets
+identification tools like SCOPE-DTI have the potential to elevate our
 
-and the seven modulators were validated experimentally. b The 50% effective
+understanding of these compounds from empirical observation to a
 
-concentration of Tyrphostin 9, Vodobatinib, Flumatinib and PF-562271 in the FAK
+new, mechanism-centric era. By systematically mapping the interac￾tions between these molecules and the human proteome, we can begin
 
-kinase ADP-Glo assays, respectively. PF-562271 as positive control. Mean ± SEM of
+to unravel the molecular basis of daily wellness and preventative
 
-three independent experiments is shown (n = 3). c The 50% effective concentration
+health. However, moving from target identification to mechanistic
 
-of Vodobatinib, Tyrphostin 9 and sorafenib in the FLT3 kinase ADP-Glo assays,
+insight requires acknowledging that physical binding is a critical
 
-respectively. Sorafenib as positive control. Mean ± SEM of three independent
+starting point, not an endpoint. A truly comprehensive understanding
 
-experiments is shown (n = 3). Source data are provided as a Source Data file.
+of a compound’s systemic effects necessitates a multifaceted
 
-Article https://doi.org/10.1038/s41467-025-62235-6
+approach. To translate physical binding into functional outcomes,
 
-Nature Communications | (2025) 16:6915 9
+downstream functional assays are essential. Furthermore, to capture
 
-EviDTI leverages 2D topological graphs, 3D molecular geometries of
+the dynamic nature of cellular responses, future studies should inte￾grate context-specific data, such as transcriptomics from treated cells,
 
-drug molecules, and target protein sequences for DTI prediction.
+to identify targets whose expression is modulated by the compound
 
-Additionally, EDL is employed to estimate uncertainty, providing a
+itself.
 
-robust measure of prediction confidence. The performance compar￾ison across three datasets demonstrates that EviDTI achieves compe￾titive performance compared to 11 DTI prediction models. This study
+Despite these accomplishments, several areas remain for future
 
-demonstrates that EDL can provide a reliable uncertainty quantifica￾tion for DTIs prediction. Importantly, we showed that uncertainty￾guided predictions can prioritize experiments in drug discovery and
+improvement. Our choice to incorporate 3D structural information
 
-drug repositioning studies. The experimental validation of interactions
+was motivated by its clear benefits to performance and interpret￾ability. However, our ablation studies revealed a notable discrepancy:
 
-between two tyrosine kinase targets and seven potential tyrosine
+3D compound structures currently offer more significant perfor￾mance gains than 3D protein structures. We hypothesize this is
 
-kinase modulators (totally 14 potential DTIs) was performed. Among
+directly linked to the inherent limitations of current protein structure
 
-those predicted DTIs, 5 DTIs showed binding affinity, and 4 of them
+prediction methods like AlphaFold2. While these AI-based tools have
 
-reached the nanomolar level of binding affinity. These results
+revolutionized structural biology, their predictions, as others have
 
-demonstrate that EviDTI is a powerful tool that can accelerate the
+noted, must be treated as exceptionally useful hypotheses rather
 
-translation process from theoretical models to actual drug
+than ground truth51. Their accuracies vary, and critically, they do not
 
-development.
+account for the influence of ligands, covalent modifications, or other
 
-However, the model still has some limitations. Although EviDTI
+cellular factors that can alter protein conformation. Consequently,
 
-was designed with the objective of identifying potential DTIs, it is
+even high-confidence predictions can exhibit local or global devia￾tions from the biologically active state. Looking forward, we antici￾pate that the next generation of predictive tools, such as AlphaFold3,
 
-currently cannot determine whether the molecule has an activating or
+will provide more accurate, dynamic, and context-aware structural
 
-inhibitory effect on the target. To overcome this limitation, future
+data. Our modular framework is well-positioned to seamlessly inte￾grate these future advancements, which we expect will unlock sig￾nificant further gains in DTI prediction accuracy. Furthermore, while
 
-directions for improvement include introducing more molecular bio￾chemical properties into the model, developing a multi-task learning
+the bilinear attention mechanism effectively captures interaction
 
-framework capable of predicting activation and inhibition
+patterns, its interpretability remains most meaningful at the cluster
 
-simultaneously.
+level. Future work will therefore focus on incorporating more gran￾ular data, such as pocket-level binding information, and refining the
 
-In addition, EviDTI has difficulty in providing discriminating
+model architecture to enhance both the residue-specific accuracy
 
-probabilities and uncertainties for interactions between compounds
+and the interpretability of our framework. Finally, on the data front,
 
-and the target and its mutants. The development of effective drugs
+while SCOPE represents the large dataset of its kind, our analysis
 
-that specifically targeting mutants is essential to improve treatment
+revealed that coverage for certain crucial protein families, such as
 
-outcomes, especially in diseases driven by specific genetic alterations
+GPCRs, remains limited due to the scarcity of public data. Our scaling
 
-such as acute myeloid leukemia (AML). However, EviDTI relies on one￾dimensional protein sequence information, its ability to capture the
+analysis confirms that model performance is currently data-limited.
 
-nuanced effects of mutations may be limited. We believe in incorpor￾ating more informative representations such as protein 3D structural
+Therefore, future efforts in large-scale, systematic data generation
 
-information and pharmacologically perturbed transcriptomics data
+and curation for these underrepresented target classes will be para￾mount to building truly comprehensive and universally applicable
 
-can more effectively address these limitations.
-
-In the future, the model can be extended as follows to enhance its
-
-performance and generalizability. First, with the rapid advancements
-
-in 3D protein structure prediction methods29,78, incorporating 3D
-
-protein structure information into DTI predictions has the potential to
-
-significantly enhance prediction accuracy. However, modeling 3D
-
-protein structures remains complex and considerably increases com￾putational time; therefore, this study did not utilize such information
-
-in the modeling process. Nevertheless, we believe that integrating 3D
-
-structural data—particularly when combined with pocket
-
-information79,80—can yield deeper insights into interaction mechan￾isms, ultimately leading to more accurate DTI predictions and
-
-improved interpretation of these interactions.
-
-Furthermore, this study uses LA module to obtain amino acid
-
-attention weights, providing molecular-level insights into DTIs. How￾ever, the EviDTI framework still faces limitations in explicitly learning
-
-the interactions between drug and protein local structures. Several
-
-approaches have been developed to visualize the contributions of
-
-protein sequences and drug substructures to the final prediction
-
-results through a cross-attention mechanism, thus enhancing the
-
-interpretability of the model. Combining this cross-attention
-
-mechanism with evidential-based deep learning can improve model
-
-accuracy and interpretability while effectively calibrating uncertainty.
-
-Moreover, while EDL can calibrate prediction uncertainty for
-
-unknown samples, it does not inherently improve prediction perfor￾mance for out-of-distribution samples (i.e., cross-domain general￾ization). Transfer learning can address this limitation by aligning the
-
-a 1Y91 b
-
-D145
-
-E11
-
-Y71
-
-I135
-
-I136
-
-G139
-
-T138
-
-G69
-
-1D6N
-
-c 1CZH
-
-T14
-
-G12 T11 W56
-
-Q15
-
-d 1Z83
-
-G40
-
-P17 G16
-
-G18
-
-S19
-
-Fig. 6 | Visualization of attention scores of all the residues in the four randomly
-
-selected drug-target complexes. a–d The correctly predicted amino acid residues
-
-surrounding the corresponding ligands (sticks) are highlighted. The residues
-
-around the corresponding ligands that were correctly predicted are highlighted in
-
-the figure. Their color indicates the degree of contribution of these residues to the
-
-prediction results. 3D representations of all structures were visualized using Pymol
-
-software.
-
-Article https://doi.org/10.1038/s41467-025-62235-6
-
-Nature Communications | (2025) 16:6915 10
-
-feature distributions of the training set with new samples and learning
-
-transferable representations. Combining EDL with transfer learning
-
-could significantly enhance the efficiency of drug discovery and drug
-
-repositioning.
-
-Finally, the EviDTI framework, with its focus on generalizability,
-
-holds the potential to be extended for application to other interaction
-
-prediction problems. This includes, but is not limited, to enzymatic
-
-reaction kinetic parameters prediction and drug-drug interaction
-
-prediction. The adaptability and versatility of this framework open up
-
-new avenues for research and application in the field of drug-target
-
-interaction prediction.
+DTI prediction models.
 
 Methods
 
-Datasets
+SCOPE dataset development
 
-Three datasets DrugBank68, Davis59, and KIBA60 were used for model
+We developed the SCOPE dataset as a comprehensive, multi-source,
 
-evaluation. Supplementary Table 1 summarizes these datasets.
+and well-annotated resource tailored for drug-target interaction (DTI)
 
-DrugBank: the data used in this study were published on January 3,
+prediction. This dataset integrates DTI data from a wide range of
 
-2020 (version 5.1.5). Drugs with inorganic compounds, very small
+public sources, including ChEMBL activity30, PubChem activity29,
 
-molecule compounds [e.g., iron (DB01592), zinc (DB01593)], or
+DrugBank52, BindingDB20, DrugCentral53, TTD54, Pharos55,
 
-SMILES strings that the RDKit Python package could not recognize
+PROMISCUOUS56, GtoPdb27, Human22, BioSNAP57, KIBA23, and DAVIS58.
 
-were removed. Drugs with a SMILES length greater than 300 were also
+Additionally, these sources encompass more than 20 reference data
 
-removed to comply with the maximum input of MG-BERT. Ultimately,
+sources. However, the raw data presented several challenges: (1) lack
 
-6148 drugs and 4085 targets, totaling 16,531 pairs of known drug￾target interactions, were collected, and these known drug-target
+of unified annotations, (2) varying scales and pharmacological eva￾luation metrics, and (3) inconsistent data quality with potential erro￾neous entries. To address these issues, we performed comprehensive
 
-interactions were used as positive samples for training. We randomly
+data cleaning and standardization.
 
-disrupted these positive pairs to generate negative samples, specifi-
+Protein and compound annotation. We unified protein annotations
 
-cally by randomly selecting a drug-target interaction pair and forming
+by the Uniprot database and filtered all human proteins, focusing on
 
-a negative drug-target interaction pair between the target in that pair
+druggable targets for interaction prediction with small molecules.
 
-and another drug with a known drug-target interaction pair. Negative
+Proteins were classified into pharmacological target families (e.g., G￾protein-coupled receptors (GPCRs), kinases) using the IUPHAR data￾base. To provide structural insights, we generated three-dimensional
 
-samples with the same number of positive samples, totaling 16,531
+(3D) structures for all proteins using AlphaFold2. Compounds were
 
-negative sample pairs, were generated through the above steps. Thus,
+annotated using identifiers from the PubChem and ChEMBL databases.
 
-a total of 33,062 pairs of samples were collected in the DrugBank
+We generated 3D structures of the compounds using RDKit and opti￾mized their conformations with the Merck Molecular Force
 
-dataset, with a ratio of positive to negative samples of 1:1.
+Field (MMFF).
 
-Davis and KIBA: The Davis and KIBA dataset records wet-lab values
+Interaction label unification. To harmonize different scales and
 
-for determining the binding affinity between drugs and proteins. We
+pharmacological evaluation metrics across various data sources, we
 
-refer to previous work and divide positive and negative samples using
+assigned interaction labels based on PubChem activity distributions,
 
-5.0 and 12.1 as thresholds to construct a binary classification dataset.
+classifying them as either positive (1) or negative (0). Specific classifi-
 
-In order to assess the ability of the model to predict novel com￾pound interactions in real-world drug discovery, we implemented a
+cation criteria are detailed in Supplementary Note 1 and Supplemen￾tary Table 2. This approach allowed us to standardize experimental
 
-cold-start scenario following the practice established by Wang et al.12
+information from different sources into a consistent binary
 
-Selected 10% of drugs from DrugBank dataset, and then all the DTI
+classification.
 
-pairs associated with these drugs were used as a test set. Resulting in
+Multi-source data integration. To further improve data quality, we
 
-3170 cold-start test samples VS. 29,894 training samples.
+consolidated multiple data sources by retaining only interactions
 
-To perform the unseen data prediction (see “Uncertainty predic￾tion accelerates drug discovery”), we collected all new drugs approved
+consistently labeled as positive across all sources. If any source labeled
 
-by the FDA in 2022 and their targets from the DrugBank dataset. In
+an interaction as negative, we considered the interaction negative in
 
-2022, the FDA approved 37 new drugs for marketing, including 22 new
+our dataset. This conservative approach maximized the reliability of
 
-molecular entities and 15 new biologic applications. Only molecular
+positive samples.
 
-drugs were selected among these new approvals, while drugs already
+Article https://doi.org/10.1038/s41467-025-66311-9
 
-appearing in the training set were removed. Ultimately, we collected 13
+Nature Communications | (2025) 16:11509 9
 
-drugs, 22 targets, and 24 pairs of interactions. We used the same
+Mitigating target-level interaction imbalance. To address target￾level interaction imbalance—where a protein pi exhibits a dispropor￾tionate number of interactions from one class – we implemented a
 
-method for constructing the negative samples as for the DrugBank
+dataset filtering strategy. For each protein pi, we consider its interac￾tion set IðpiÞ = fðpi, cj, lijÞg, where cj denotes a compound and lij ∈ {0, 1}
 
-training set, randomly generating as many negative samples as positive
+indicates the interaction label. The imbalance is quantified through
 
-samples. Thus, we collected 48 pairs of samples for out-of-domain
+two counters: N0(negative interactions) and N1 (positive interactions)
 
-performance testing. In these samples, the ratio of positive to negative
+within IðpiÞ.
 
-samples was 1:1.
+If pi had more than 75% of its interactions belonging to one class,
 
-Framework architecture
+we performed stratified random sampling to obtain a subset I0
 
-Protein feature encoder. The protein feature encoder consists of an
+ðpiÞ that
 
-initial encoding module and a LA module81.
+satisfies:
 
-In the initial coding module, we extracted sequence information
+minðN0
 
-using the widely used protein language model ProtTrans30 (denoted
+0,N0
 
-as ProtT5), which is a self-supervised autocoder based on the trans￾former model. A 1024-dimensional sequence embedding for each
+1Þ
 
-residue was extracted using ProtT5. For each protein, we obtained a
+N0
 
-L × 1024-dimensional feature matrix, where L is the length of the
+0 +N0
 
-protein chain. We did not train ProtT5, but used its locked para￾meters to obtain the representations.
+1
 
-The protein feature matrix is encoded using light attention. The
+≥ 0:25, ð1Þ
 
-input to light attention is a protein embedding x of size L × din, where L
+whereN0
 
-is the length of the protein chain, i.e., the number of amino acids, and
+0 and N0
 
-din is the length of the initial representation of each amino acid, in this
+1 are the counts of negative and positive interactions in
 
-case, 1024. Two independent 1D convolutions transform the input.
+I0
 
-Convolution is used in the length dimension to generate attention
+ðpiÞ, respectively. This ensures that the minority class is represented
 
-coefficients and values e, v.
+at least 25% of the interactions for pi, achieving a class ratio between
 
-ei, j = bi +
+25% and 75%. Proteins with insufficient interactions after filtering were
+
+excluded to maintain data quality.
+
+Visualization of data cleaning effects. To demonstrate the impact of
+
+our data cleaning and balancing procedures, we analyzed the dis￾tribution of interaction ratios per protein before and after filtering. For
+
+each protein pi, we calculated the ratio of positive interactions:
+
+RðpiÞ = N1
+
+N0 +N1
+
+, ð2Þ
+
+where N0 and N1 are the counts of negative and positive interactions,
+
+respectively, for protein pi. We grouped proteins into intervals based
+
+on R(pi) with a specified interval length (e.g., 0.02) and plotted the
+
+number of proteins within each interval. This visualization highlighted
+
+the reduction of proteins with extreme interaction imbalances after
+
+filtering.
+
+Dataset statistics and comparative analysis. We quantified the
+
+SCOPE dataset by calculating the number of unique compounds, tar￾gets, and total interactions. Our dataset encompasses a significantly
+
+larger number of compounds and interactions compared to existing
+
+datasets, both before and after the filtering procedures. To illustrate
+
+the scale and comprehensiveness of SCOPE, we generated plots that
+
+compare the data volume with that of previous datasets, highlighting
+
+our dataset’s superiority in size and diversity. Detailed statistical
+
+information and comparative analyses are provided in Fig. 1 and Sup￾plementary Table 3.
+
+SCOPE framework architecture
+
+HGNN for protein structure. A protein Pi 2 P, composed of M amino
+
+acid residues, can be represented by its primary sequence
+
+Si = (v1, v2, …, vM), where each residue vm belongs to one of the
+
+20 standard amino acid types. In their physicochemical environment,
+
+these sequences fold into stable three-dimensional (3D) structures. To
+
+capture both the sequence and structural information of protein Pi, we
+
+construct a residue-level heterogeneous protein graph
+
+Gð
+
+P
+
+iÞ
+
+= ðVP
+
+ðiÞ
+
+, Eð
+
+P
+
+iÞ
+
+, RÞ, where VP
+
+ðiÞ represents the residues as nodes, Eð
+
+P
+
+iÞ
+
+denotes the edges connecting them, and R specifies the edge types.
+
+In this work, we use two types of edges to represent the rela￾tionships between residues. Sequential edges connect residues that
+
+are adjacent in the primary sequence, preserving the natural order of
+
+the amino acids. Radius edges connect residues whose spatial Eucli￾dean distance, calculated based on the geometric centers of all their
+
+atoms, is below a predefined threshold dr. This approach ensures that
+
+both local sequence context and spatial proximity within the folded
+
+protein are encoded.
+
+To encode the heterogeneous protein graph GP = (VP, EP, R), we
+
+employ a Heterogeneous Graph Neural Network (HGNN)32. Each edge
+
+type r ∈ R is associated with a weight matrix Wð
+
+r
+
+lÞ at layer l, and a shared
+
+weight matrix Wð
+
+h
+
+lÞ is used to combine the aggregated messages from
+
+different edge types.
+
+The node embeddings are updated iteratively across L layers. At
+
+layer l(where 1≤l≤L), the embedding of each residue vm is computed as:
+
+hm
+
+ðlÞ
+
+= BN ReLU Wð
+
+h
+
+lÞ  X
+
+r2R
 
 X
 
-din
+vn2N rðmÞ
 
-k = 1
+0
 
-X
+@
 
-d e2
+0
 
-s
+@ Wr
 
-l =  2
+ðlÞ
 
-s
+hð
 
-Wð
+n
 
-l
+l 1Þ
 
-e
+1
 
-, k
+A
 
-Þ
+1
 
-, i
+A, ð3Þ
 
-xk, j + l ð1Þ
+where hð
 
-where b is a learned bias, s is filter sizes, WðeÞ is the weights of the 1D
-
-convolutions.
-
-To obtain the attention weights, softmax normalization is per￾formed on eij. The attention weight αij for the j-th residue and the i-th
-
-feature dimension is computed as:
-
-αi, j = expðei, jÞ
-
-Pl
-
-l = 1 expðei, lÞ ð2Þ
-
-The weight distribution of each feature dimension i is indepen￾dent, and they can produce different attention patterns. The attention
-
-distribution calculates a weighted sum of the transformed residual
-
-embeddings vij. Thus, we obtain a representation x0 independent of
-
-protein length.
-
-x0
-
-i =
-
-XL
-
-j = 1
-
-αi, jvi, j ð3Þ
-
-Drug feature encoder. The drug feature encoder consists of a 2D
-
-topology encoding module and a 3D structure encoding module.
-
-In the 2D topology encoding module, the small molecule pre￾training model MG-BERT58 is used to extract drugs’ 2D topological
-
-graph information. MG-BERT is a pre-trained model based on a self￾supervised learning approach for learning atomic-level representa￾tions of drug molecules. The model uses the transformer architecture
-
-and employs a mask-based self-supervised learning approach. Again,
-
-we did not train MG-BERT but used its frozen parameters to obtain an
-
-initial representation of the drug. In this work, the representation
-
-obtained by MG-BERT is extracted as an initial representation of the
-
-drug molecule, which is used as input to 1DCNN to obtain a final
-
-representation of the 2D information of the drug.
-
-In the 3D structure encoding module, given a 3D structure
-
-graph, an atom-bond graph and a bond-angle graph are constructed,
-
-under which the representation vectors of atoms and bonds are
-
-learned iteratively82. In the atom-bond graph, the nodes of the graph
-
-are atoms, and the edges of the graph are covalent bonds of atomic
-
-bonds. In the bond-angle graph, the nodes of the graph are the
-
-Table 4 | Binding sites hit ratio of residues with high attention
-
-to the binding site at different thresholds
-
-Thresholds Binding sites hit ratio
-
-Number of binding amino acids 0.125
-
-Total amino acid number/100(1%) 0.030
-
-Total amino acid number/20(5%) 0.145
-
-Total amino acid number/10(10%) 0.252
-
-Total amino acid number/5(20%) 0.416
-
-Total amino acid number/3.3(30%) 0.542
-
-Total amino acid number/2(50%) 0.724
-
-Article https://doi.org/10.1038/s41467-025-62235-6
-
-Nature Communications | (2025) 16:6915 11
-
-bonds, and the edges are the bond angles between the two bonds.
-
-The scalar atomic distances and angles are mapped into high￾dimensional vectors using the Gaussian kernel function. In a more
-
-concrete sense, the representation vectors of atom u and bond ðu, vÞ
-
-for the kth iteration are denoted as hu and huv, respectively. The
-
-initialization is set as hð
-
-u
+m
 
 0Þ
 
-= xu and huv
+= xm represents the initial input feature of residue vm, and
+
+hm
+
+ðlÞ is the embedding at layer l. The neighbors N rðmÞ are defined as
+
+residues connected to vm by edge type r. The batch normalization
+
+function BN( ⋅ ) and rectified linear unit activation ReLU( ⋅ ) are applied
+
+for stable training, while Wr
+
+ðlÞ 2 Rd × d and Wh
+
+ðlÞ 2 Rd × d are learnable
+
+weight matrices. This formulation ensures that the heterogeneous
+
+nature of the graph is effectively captured, integrating sequence and
+
+structural information into a unified representation.
+
+This formulation ensures that messages from different edge types
+
+are appropriately transformed and aggregated.
+
+GVP for drug encoding. Given the three-dimensional (3D) coordinates
+
+of atoms in a molecule, we represent the molecular structure as a
+
+graph Gd = (Vd, Ed), where the nodes Vd correspond to the atoms of the
+
+molecule, and the edges Ed are defined between pairs of atoms whose
+
+Euclidean distance is less than 4.5 Å59. This representation captures
+
+both the chemical and spatial relationships within the molecule.
+
+Node Features: For each atom i, we construct a node feature
+
+hi
 
 ð0Þ
 
-= xuv.
+= ðhi
 
-Given the bond ðu, vÞ, its representation vector huv
+ð0Þ, v
 
-ðkÞ at the kth
+, hi
 
-iteration is formulated by
+ð0Þ, s
 
-að Þ
+Þ, which consists of both a vector component hð
 
-uv
+i
 
-k = Aggregateð Þ
+0Þ, v
 
-bond
+and a scalar component hi
 
-k
+ð0Þ, s
 
+. The vector feature hi
 
+ð0Þ, v = ci 2 R3
 
-angle fðhð Þ
+represents the atom’s 3D coordinates in space. The scalar feature
 
-uv
+hi
 
-k 1 , hð Þ
+ð0Þ, s 2 R74 is a 74-dimensional integer vector that describes the atom
 
-uw
+with eight types of information: the atom type, the atom degree, the
 
-k 1 , xwuvÞ : w 2 NðvÞg
+number of implicit hydrogens, the formal charge, the number of
 
-∪ fðhuv
+radical electrons, the atom hybridization, the number of total hydro￾gens, and whether the atom is aromatic35.
 
-ðk 1Þ
+Edge Features: For each edge (i, j) ∈ Ed, we define an edge feature
 
-, huw
+eji = ðev
 
-ðk 1Þ
+ji, es
 
-, xuvwÞ : w 2 NðvÞg
+jiÞ. The vector feature ev
 
-ð4Þ
+ji = k
 
-huv
+c
 
-ðkÞ
+c
 
-= Combinebond
+j ci
 
-ðkÞ
+j cik 2 R3 is the unit vector
 
+pointing from atom i to atom j. The scalar feature es
 
+ji = RBFðk cj  ci kÞ 2
 
-angleðhð
+R16 encodes the pairwise distance using 16 Gaussian radial basis func￾tions (RBFs) with centers evenly spaced between 0 and 4.5 Å.
 
-uv
+Molecular Graph Neural Network: To learn a representation for the
 
-k 1Þ
+input molecule, we utilize a Graph Neural Network based on Geometric
 
-, auv
+Vector Perceptrons (GVPs)34. Each node embedding hi
 
-ðkÞ
+ðlÞ
 
-Þ ð5Þ
+= ðhð
 
-NðuÞ and NðvÞ represent the adjacent atoms of u and
+i
 
-v,fðu, wÞ : w 2 NðuÞg ∪ fðv, wÞ : w 2 NðvÞg are the neighboring bonds
+lÞ, v
 
-of ðu, vÞ.
+, hi
 
-The function “Aggregate” aggregates messages, while “Combine”
+ðlÞ, s
 
-updates the bond-angle graph.
+Þ
 
-The information from adjacent bonds and corresponding bond
+consists of a vector and a scalar component.
 
-angles is aggregated into að Þ
+At each layer l, the node embeddings are updated using the fol￾lowing equation:
 
-uv
+hi
 
-k , and subsequently, the bond repre￾sentation ð Þ u, v is updated based on the aggregated information.
+ðlÞ
 
-For an atom u, at the kth iteration, its representation vector hð Þ
+= hð
 
-u
+i
 
-k
+l 1Þ
 
-can be expressed as:
++ GVP hð
 
-að
+i
 
-u
+l 1Þ
 
-kÞ = Aggregateatom
+,
 
-ðkÞ
+X
 
+j2N ðiÞ
 
+0
 
-bondðfðhu
+@ GVP  hð
 
-ðk 1Þ
+j
 
-, hð
+l 1Þ
 
-v
+, eji
 
-k 1Þ
+1
 
-, hð
+A ð4Þ
 
-uv
+where N ðiÞ denotes the set of neighboring nodes of node i, GVP( ⋅ , ⋅ )
 
-k 1Þ
+represents a GVP layer that processes node and edge features, and
 
-Þ : v 2 NðuÞgÞ ð6Þ
+hi
 
-hu
+ð0Þ
 
-ðkÞ
+= vi is the initial feature of node i. This update rule incorporates
 
-= Combineatom
+both the features of neighboring atoms and the geometric information
 
-ðkÞ
+from edge features.
 
+After L layers of message passing, we obtain the final node
 
+embeddings hð
 
-bondðhð
+i
 
-u
+LÞ for all nodes in the graph. To derive a fixed-size
 
-k 1Þ
+representation of the entire molecule, we apply a global add pooling
 
-, au
+Article https://doi.org/10.1038/s41467-025-66311-9
 
-ðkÞ
+Nature Communications | (2025) 16:11509 10
 
-Þ ð7Þ
+operation over all node embeddings:
 
-The messages from the bonds are learned from the bond-angle
+hd =
 
-graph. The aggregated messages then update the representation
+X
 
-vector of atom u.
+i2Vd
 
-The atom’s representation vectors at the final iteration are inte￾grated to obtain the molecular representation vector hG through the
+hð
 
-READOUT function.
+i
 
-Evidential layer. The learned drug and protein representations
+LÞ
 
-are concatenated and serve as inputs to the evidential layer. The
+, ð5Þ
 
-evidence layer is a fully connected neural network with N layers.
+where hd 2 Rd is the learned representation of the input molecule.
 
-Unlike classical neural networks, the softplus layer is used to ascer￾tain non-negative output. In the deep evidential classification model,
+Pairwise interaction learning. To capture pairwise local interactions
 
-the joint evidence distribution is presented as a Dirichlet distribu￾tion, which is used to represent the interaction prediction and the
+between drugs and proteins, we employ a bilinear attention network
 
-degree of evidence associated with that prediction. The outputs of
+module comprising two key layers: a bilinear interaction map to
 
-the evidence layer are used as parameters of the predicted Dirichlet
+compute pairwise attention weights, and a bilinear pooling layer over
 
-distribution. For the DTI prediction task, the network has two
+the interaction map to extract a joint drug–protein representation.
 
-outputs.
+Given the hidden representations from the encoders
 
-Evidential learning for classification
+—Hd 2 RN ×Dd for the drug and Hp 2 RM × Dp for the protein—we com￾pute the pairwise interaction matrix I 2 RN × M as:
 
-In subjective logic (SL), for each class k = 1, : ::, K, SL will provide a
+I =
 
-belief mass bk and an overall uncertainty mass u to compose a fra￾mework for evaluating the K classification. These mass values are all
+  σ
 
-non-negative and sum to 1, i.e.,
+  HdU q>  σ
 
-u +
+  HpV >
 
-XK
+, ð6Þ
 
-k = 1
+where U 2 RDd × K and V 2 RDp × K are learnable weight matrices, q 2
 
-bk = 1 ð8Þ
+RK is a learnable weight vector, σ( ⋅ ) is an activation function (e.g.,
 
-where u ≥ 0 and bk ≥ 0 for k = 1, : ::, K.
+sigmoid), ⊙ denotes element-wise multiplication (Hadamard pro￾duct), and the superscript ⊤ indicates matrix transpose. Each element
 
-The bk value is computed from the amount of evidence for the kth
+Ii,j represents the interaction score between the i-th atom of the drug
 
-class. Let ek ≥ 0 be the evidence for the kth class, then the belief bk and
+and the j-th residue of the protein.
 
-uncertainty u are calculated as
+For intuitive understanding, an element Ii,j can be expressed as:
 
-bk = ek
+Ii, j = q>
 
-S and u = K
+  σ
 
-S ð9Þ
+  U>hi
 
-where S = PK
+d  σ
 
-i = 1ei  1.
+  V >hj
 
-Here, the evidence is defined as a measure of the support from the
+p , ð7Þ
 
-data collection to a certain class to support the sample classification. A
+where hi
 
-belief mass assignment, i.e., subjective opinion, corresponds to a
+d and hj
 
-Dirichlet distribution with parameters αk = ek + 1.
+p are the embeddings of the i-th atom and the j-th
 
-That is:
+residue, respectively.
 
-bk = αk  1
+The joint representation f
 
-S ð10Þ
+0 2 RK is then computed via bilinear
 
-Where S = PK
+pooling:
 
-i = 1αi
+f 0
 
-The expected probability of the Kth class is the mean of the cor￾responding Dirichlet distribution, calculated as
+=
 
-p^k = αk
+  σ
 
-S ð11Þ
+  HdU > I σ
 
-The EviDTI is trained end-to-end using a multi-objective loss
+  HpV 1, ð8Þ
 
-function LðΘÞ to achieve the maximum fit and minimum incorrectly
+where 1 2 RM is a vector of ones used for summation over the protein
 
-predicted evidence for the model.
+residues. To reduce dimensionality, we apply sum pooling:
 
-LðΘÞ =
+f = SumPool  f
 
-XN
+0
 
-i = 1
+, s , ð9Þ
 
-LiðΘÞ + λt
+resulting in the final feature vector f 2 RK=s
 
-XN
+.
 
-i = 1
+To compute the interaction probability, we feed the joint repre￾sentation f into a decoder consisting of a fully connected layer fol￾lowed by a sigmoid activation function:
 
-KL D pijαei
+p = σ
 
-  jjDð pijh1, ... , 1iÞ   ð12Þ
+  Wof + bo , ð10Þ
 
-Where λt is the annealing coefficient, t is the index of the current
+where Wo and bo are learnable weight parameters.
 
-training epoch, Dðpij Þ h i 1, :::, 1 is the uniform Dirichlet distribution, and
+Finally, we jointly optimize all learnable parameters using back￾propagation. The training objective is to minimize the cross-entropy
 
-e
+loss with L2 regularization:
 
-αi = yi + ð1  yiÞ  αi is the Dirichlet parameters after removal of the
+L=  X
 
-non-misleading evidence from predicted parameters αi for sample i.
+i
 
-More details about the Evidential Deep Learning to Quantify
+ 
 
-Classification Uncertainty.
+yi log pi + ð1  yiÞlogð1  piÞ + 2
 
-Comparison methods
+λ
 
-For the DrugBank, Davis and KIBA dataset, we retrained and tuned all
+k θk2
 
-models based on the parameters provided in their respective GitHub
+2, ð11Þ
 
-repositories. All methods were conducted with five repeated experi￾ments, and the results are reported as the mean and variance.
+where θ represents the set of all learnable parameters, yi is the ground￾truth label for the i-th drug–protein pair, pi is the predicted probability,
 
-DeepConv-DTI19. DeepConv-DTI utilizes CNNs to extract features
+and λ is the regularization hyper-parameter. Overall, this pairwise
 
-from proteins and fully connected networks (FCNs) to extract features
+interaction learning approach is highly inspired by and adapted from
 
-from drugs, followed by making predictions.
+DrugBAN15.
 
-GraphDTA64. GraphDTA employs GNN and CNN to represent drugs
+Experimental setting
 
-and proteins, respectively. As Nguyen et al. reported, the GAT_GCN
+Datasets. We evaluated the SCOPE model and five state-of-the-art
 
-combination is chosen as the feature extractor in subsequent experi￾mental comparisons.
+baseline models on four public DTI datasets: BindingDB, KIBA, Human,
 
-For a fair comparison, GraphDTA were adapted according to the
+and our constructed SCOPE dataset. The SCOPE dataset includes var￾ious protein families annotated by IUPHAR, such as G-protein-coupled
 
-following steps:(1) A Sigmoid activation function was added after the
+receptors (GPCRs), kinases, ion channels, and nuclear hormone
 
-last layer to convert the model output to binary probabilities. (2) A
+receptors, along with our total dataset. All datasets were tested in both
 
-binary cross-entropy was used as the loss function instead of the ori￾ginal mean square error (MSE) loss. (3) A grid search was performed to
+their original and debiased versions. The BindingDB dataset20 is a web￾accessible database of experimentally validated binding affinities
 
-optimise key hyperparameters such as learning rate and batch size,
+between small drug-like molecules and proteins; we utilized a low-bias
 
-and a validation set was used to determine the best configuration.
+version of this dataset21. The KIBA dataset23 integrates various bioac￾tivity measurements to provide a comprehensive set of drug-target
 
-MolTrans20. MolTrans employs the transformer model to encode
+interactions, focusing particularly on kinase inhibitors. The Human
 
-protein and drug sequences into feature embeddings. These embed￾dings are used to construct an interaction matrix, which is subse￾quently processed by CNNs and FCNs to make predictions.
+dataset, constructed by Liu et al.22, includes highly credible negative
 
-TransformerCPI65. TransformerCPI utilizes the Transformer archi￾tecture, treating drugs and proteins as distinct sequences. By
+samples generated via an in silico screening method; following pre￾vious studies18,25, we used the balanced version containing an equal
 
-Article https://doi.org/10.1038/s41467-025-62235-6
+number of positive and negative samples.
 
-Nature Communications | (2025) 16:6915 12
+Implementation. SCOPE model is implemented in Python 3.9 and
 
-employing CNN and GCN, the model generates representations for
+PyTorch 2.2.060, along with functions from PyG 2.5.261, DGL 2.2.562,
 
-protein sequences and atom structures, respectively. Subsequently,
+DGLlifeSci 0.3.235, Scikit-learn 1.0.263, Numpy 1.20.264, Pandas 1.5.2, and
 
-TransformerCPI extracts interaction features through the transformer
+RDKit 2021.03.2. The batch size is set to be 64, and the Adam optimizer
 
-decoder and employs linear layers to produce the final output,
+is used with a learning rate of 5e-5. We allow the model to run for at
 
-representing the interaction probability.
+most 100 epochs for all datasets. The best performing model is
 
-HyperAttentionDTI17. HyperAttention DTI is an end-to-end bio￾inspired model built upon the CNN and attention mechanism. Deep
+selected at the epoch giving the best AUROC score on the validation
 
-CNNs are employed to learn feature matrices for both drugs and
+set, which is then used to evaluate the final performance on the test set.
 
-proteins adeptly. The attention mechanism was leveraged on these
+The protein encoder HGNN utilizes an embedding dimension of 320
 
-feature matrices to capture intricate non-covalent intermolecular
+and processes protein sequences with a maximum allowed length of
 
-interactions among atoms and amino acids, assigning an attention
+2000 amino acids. To construct the protein 3D graph, we set an edge
 
-vector to each atom or amino acid.
+cutoff distance of 10 Å. The HGNN comprises 4 layers, and we include a
 
-AIGO-DTI66. AIGO-DTI proposes an Adaptive Iterative Graph Optimi￾zation (AIGO)-DTI prediction framework. This framework integrates
+fully connected layer with bias to enhance model capacity. For the
 
-atomic cluster information and enhances molecular features through
+drug feature encoder, the atom input dimensions are set to [74, 1],
 
-the design of functional group prompts and graph encoders, thereby
+capturing both scalar and vector features. The atom's hidden dimen￾sions are [320, 64], allowing the model to learn complex representa￾tions. Similarly, the edge input dimensions are [16, 1], and the edge
 
-optimizing the construction of DTI association networks. Further￾more, the optimization of graph structure is transformed into a node
+hidden dimensions are [32, 1]. The GVP model consists of 3 layers and
 
-similarity learning problem, utilizing multi-head similarity metric
+incorporates a dropout rate of 0.1 to prevent overfitting. An edge
 
-functions to iteratively update the network structure to improve the
+cutoff distance of 4.5 Å is used, and we compute 16 radial distribution
 
-quality of DTI information.
+functions to capture spatial relationships between atoms. Notably,
 
-GraphormerDTI24. GraphormerDTI integrates the Graph Transformer
+there is no maximum length restriction for compounds in our model.
 
-neural network with a 1D-CNN to extract the representations of drug
+In the bilinear attention module, we employ two attention heads to
 
-and target, respectively. Specifically, GraphormerDTI embeds mole￾cular graphs into vector representations through iterative
+enhance interpretability while capturing intricate interactions between
 
-Transformer-based message passing. The structural representations of
+drugs and proteins. The latent embedding size is set to 768, and we use
 
-the molecules are encoded through node centrality encoding, node
+a sum pooling window size of 3 to aggregate features effectively. The
 
-spatial encoding and edge encoding. The attentional mechanisms are
+decoder is a fully connected network with 512 hidden neurons,
 
-used to model interactions.
+enabling the model to make accurate predictions based on the learned
 
-DLM-DTI27. DLM-DTI was comprised of three primary components: the
+representations.
 
-drug encoder, the target encoder, and the interaction prediction head.
+Baselines. We compare the SCOPE model with the following five
 
-The target encoder incorporates both the teacher and student models
+methods for DTI prediction: (1) SVM, a shallow machine learning
 
-of language models for protein sequences. The teacher model
+algorithm; (2) MLP, a simple deep neural network with hidden
 
-employed for target sequence encoding was the ProtBERT model. The
+dimensions [2048, 512, 128, 32], applied to the concatenated ECFP4
 
-student model was designed to be consistent with the original teacher
+and PSC fingerprint features; (3) MolTrans, a deep learning model that
 
-model with fewer layers to conduct knowledge distillation. The func￾tion of the drug encoder is to convert SMILES sequences to molecular
+uses the transformer architecture to encode drug and protein features,
 
-representations, and this is achieved by employing the ChemBERTa
+with a CNN-based module to capture sub-structural interactions; (4)
 
-encoder. The interaction prediction header predicts interaction
+TransformerCPI, a Transformer-based model with an encoder for
 
-probabilities by concatenating drug and target representations.
+protein sequences and a decoder for molecular graphs, leveraging
 
-Statistical analysis of binding sites
+multi-head attention to extract interaction features; (5) BertDTI, a
 
-To verify the correlation between residues with higher attention values
+model that leverages large, pre-trained foundation models for repre￾sentation learning. It utilizes ChemBERTa to encode drug SMILES and
 
-in LA and drug-target binding sites, we obtained the real three￾dimensional structures of the DTI interaction pairs in the DrugBank
+ProtBERT to encode protein sequences, with a simple MLP decoder for
 
-dataset from the PDB database for statistical analysis of binding sites.
+the final DTI prediction. (6) DrugBAN, a model that encodes drug
 
-First, drug-target pairs lacking the true structure of the protein
+molecules and protein sequences using graph convolutional networks
 
-were excluded. Next, for each protein, only structures containing
+and 1D-convolutional neural networks, followed by a bilinear attention
 
-small molecules that interact with them in the PDB file were retained.
+network to capture pairwise interactions and a fully connected deco￾der for DTI prediction. For the above deep DTI models, we follow the
 
-The binding sites of the drugs were then calculated, defining a
+recommended model hyper-parameter settings described in their
 
-binding residue as any atom of that residue within a 4 Å Euclidean
+original papers.
 
-distance of the drug molecule. Finally, to ensure accurate mapping of
+Article https://doi.org/10.1038/s41467-025-66311-9
 
-attention values to residues, the amino acid sequence indexes in the
+Nature Communications | (2025) 16:11509 11
 
-PDB were aligned with those in UniProt, which were used during
+Interpretability. Representative AlphaFold structures (UniProt IDs
 
-training.
+P46095, O43826, and P42224) were retrieved from the AlphaFold
 
-In the Light Attention network, for a given amino acid sequence of
+Protein Structure Database (AlphaFold DB; DOI: 10.1093/nar/
 
-length L, the network will output an L × din dimensional attention
+gkab1061), model version 4 (corresponding to AlphaFold DB release
 
-vector, where din denotes the dimension of the attention vector. We
+4), in September 2024. These structures were used in the interpret￾ability analysis to visualize model-derived interaction patterns and
 
-get the attention value for each amino acid by taking the average of
+evaluate structure-based consistency of binding features. The asso￾ciated pLDDT-colored models and Predicted Aligned Error (PAE) plots
 
-this matrix in the din dimension. A larger attention value means that
+are provided in Supplementary Fig. 6.
 
-the amino acid contributes more to DTI prediction.
+Experimental validation of anti-cancer targets of Ginsenoside
 
-Experimental settings
+Rh1 and Celastrol
 
-EviDTI is implemented in Python 3.8 and PyTorch 1.12.0, as well as
+Cell viability assay. HepG2 cells (human hepatocellular carcinoma,
 
-functions in PYG 2.2.0, Scikit-learn 1.2.2, Numpy 1.24.3, Pandas 1.4.2, and
+male, 15 years old, Caucasian; CellCook, cat. no. CC0101) were used in
 
-RDKit 2020.09.1. The batch size was set to 32, and the Adam optimizer
+this study. HepG2 cells were seeded in 96-well plates at a density of
 
-was used with a learning rate of 5e-4 and a weight decay of 1e-5. We
+1 × 104 cells per well and incubated overnight at 37 ∘
 
-allowed the model to run for a maximum of 500 epochs for all datasets,
+C with 5% CO2 to
 
-and if the model’s accuracy on the validation set did not decrease within
+allow adhesion. Cells were treated with Ginsenoside Rh1 (Aladdin, cat.
 
-30, training would stop. The parameters of all neural networks are listed
+no. G107710-20mg) at final concentrations of 0, 10, 12.5, 20, 25, 40, 50,
 
-in the Supplementary Table 11 and Supplementary Fig. 9.
+and 100 μM, or with Celastrol (Aladdin, cat. no. C107671-10mg) at final
 
-Compounds collection from Targetmol-Tyrosine kinase mod￾ulator library (L2200)
+concentrations of 0, 1, 2, 3, 4, 5, 6, and 7 μM for 24 h. Untreated cells
 
-There were 746 potential tyrosine kinase modulators collected from
+served as controls. Cell viability was evaluated using the Enhanced Cell
 
-the Targetmol-Tyrosine kinase modulator library (L2200). To ensure
+Counting Kit-8 (CCK-8; Beyotime Biotechnology, cat. no. C0042). After
 
-the credibility of the experiments, we excluded kinase modulators with
+treatment, 10 μL of CCK-8 solution was added to each well, followed by
 
-drug similarity greater than 0.7 to the DrugBank dataset and ultimately
+incubation at 37 ∘
 
-retained 52 potential modulators. Drug similarity was calculated based
+C for 2 h. Optical density (OD) at 450 nm was mea￾sured using a microplate reader to quantify viable cells. All conditions
 
-on the Tanimoto coefficient.
+were tested in six independent replicates to ensure reproducibility.
 
-In vitro kinase activity assays
+Cellular thermal shift assay followed by Western blotting (CETSA￾WB). HepG2 cells were lysed in RIPA buffer (Beyotime, cat. no.
 
-The FAK (Cat#V1971) and FLT3 (Cat#V4064) were purchased from
+P0013C), and the resulting lysate was incubated with either the test
 
-Promega. Compounds Tyrphostin 9 (Cat#T2479), GSK180736A(-
+compound (100 μM Ginsenoside Rh1 or 10 μM Celastrol) or a vehicle
 
-Cat#3513), Vodobatinib (Cat# T8882), BIX02188 (Cat# T1744), PKG
+control (1% DMSO, v/v) at room temperature for 30 min. The lysate
 
-drug G1 (Cat# T4661), ST271 (Cat# T4511), Flumatinib mesylate (Cat#
+was divided into aliquots and incubated at defined temperatures (40,
 
-T7861), Mubritinib (Cat# T6124), PF-562271 (Cat# T6124) and Sor￾afenib (Cat# T0093L) were purchased from Targetmol, USA. All
+46, 52, 58, 64, and 74 ∘
 
-compounds were tested from 1000 nM, with 3-fold dilution for 10
+C) for 3 min using an Applied Biosystems PCR
 
-points.
+analyzer (Thermo Scientific, USA). Following heat treatment, the
 
-In vitro kinase activity assays were conducted through ADP-Glo
+samples were cooled at 4 ∘
 
-assays (#V9101) provided by Promega. The protocol for the FAK and
+C for 10 min and transferred to low￾adsorption centrifuge tubes. To each 100 μL aliquot, 40 μL of PBS
 
-Flt3 assay is described as follows: Enzyme, substrate, ATP, and com￾pounds were diluted in 1X reaction buffer composed of 40 mM Tris
+(Gibco, cat. no. C14190500BT) was added and mixed thoroughly.
 
-(pH 7.5), 2 mM MnCl, 100 µM sodium vanadate. In a 384-well low￾volume plate, l μl of the compound at indicated doses or 5% dimethyl
+Protein concentrations were adjusted to 2000 μg/mL and quantified
 
-sulfoxide (DMSO), 2 μl of FAK or FLT3 enzyme (15 ng/well), and 2 ul of
+using a BCA assay (Coolaber, cat. no. SK1070). The samples were
 
-substrate/ATP mix (final concentration: 20 μM ATP) were added to
+centrifuged at 20,000 × g for 30 min at 4 ∘
 
-each well. The plate was then incubated at 25 °C for 60 min to allow for
+C to remove precipitated
 
-kinase activity. Following the enzymatic reaction, 5 μl of ADP-GloT
+proteins. The resulting supernatants were mixed with 6× loading
 
-Reagent was added to each well, and the plate was incubated at 25 °C
+buffer (Beyotime, cat. no. P0015F) and denatured at 100 ∘
 
-for an additional 40 min. Subsequently, 10 μl of Kinase Detection
+C for
 
-Reagent was added to convert ADP to ATP and introduce luciferase
+10 min. The denatured samples were then cooled on ice for 10 min￾utes, followed by centrifugation at 14,000 × g for 10 min at 4 ∘
 
-and luciferin to detect ATP, and the plate was incubated for a final
+C. The
 
-30 min at 25 °C. Luminescence was recorded with an integration time
+final supernatants, containing soluble protein fractions, were col￾lected for Western blot analysis to evaluate the thermal stability of
 
-of 0.5 s using the SpectraMax iD3 instrument (Molecular Devices).
+target proteins.
 
-The 50% effective concentration was calculated using Prism 8 by
+Protein concentrations of the CETSA supernatants were quanti-
 
-fitting the following equation:
+fied using a BCA assay to ensure equal loading. Samples were mixed
 
-Y = Bottom + ðTop  BottomÞ=ð1 + 10ðlog EC50 XÞ × HillSlopeÞ ð13Þ
+with 6× loading buffer (Beyotime, cat. no. P0015F). Equal amounts of
 
-where X is a log of concentration, Y is a response, and top and bottom
+total protein were loaded onto a BeyoGel™ Plus Precast PAGE Gel (10%
 
-are the responses of controls, each assay was repeated at least three
+HEPES, 15 wells, Beyotime, cat. no. P0509M). Proteins were resolved by
 
-times, and we computed the mean and standard deviation for the
+electrophoresis (60 V for 30 min, then 110 V for 40 min). Proteins were
 
-values.
+transferred onto PVDF membranes (Millipore, cat. no. ISEQ00010)
+
+using a rapid transfer apparatus (eBlot® L1, GenScript, cat. no.
+
+L00686C) after membrane activation with methanol and equilibration
+
+buffer (Genescript, cat. no. L00734C). Membranes were blocked with
+
+QuickBlock™ Western Block solution (Beyotime, cat. no. P0252) for
+
+15 min at room temperature. Membranes were incubated overnight at
+
+4 ∘
+
+C with the following primary antibodies (all at 1:1000 dilution): anti￾AKR1B10 (Abcam, cat. no. ab96417), anti-AMPKα2 (Abcam, cat. no.
+
+ab32047), anti-NF-κB p65 (Abcam, cat. no. ab16502), and anti-CYP3A5
+
+(Abcam, cat. no. ab108624). After washing three times with TBST,
+
+membranes were incubated with HRP-labeled Goat Anti-Rabbit IgG(H
+
++L) (Beyotime, cat. no. A0208, 1:1000 dilution) or HRP-labeled Goat
+
+Anti-Mouse IgG(H+L) (Beyotime, cat. no. A0216, 1:1000 dilution) for
+
+1 hour at room temperature. Protein bands were visualized using an
+
+ECL substrate (Beyotime, cat. no. P0018FM) and imaged using Touch
+
+Imager Pro (e-BLOT Life Science, Shanghai, China). Beta Actin Poly￾clonal antibody (Proteintech, cat. no. 20536-1-AP, 1:1000 dilution) or
+
+GAPDH Monoclonal antibody (Proteintech, cat. no. 60004-1-Ig, 1:1000
+
+dilution) were probed as loading controls on the same membranes
+
+after stripping.
+
+Isothermal dose-response CETSA followed by Western blotting
+
+(ITDR-CETSA-WB). For targets that exhibited a clear thermal shift in
+
+the initial CETSA screen, ITDR experiments were carried out. HepG2
+
+lysates were incubated for 30 min with a six-point concentration series
+
+of each compound, prepared by serial 1:2 dilutions from a starting
+
+concentration of 100 μM (i.e., 100, 50, 25, 12.5, 6.25, and 0 μM), along
+
+with a vehicle control. All samples were then heated to a single, fixed
+
+temperature chosen from the thermal gradient screen to maximize the
+
+observed shift (e.g., 64 ∘
+
+C). Following heat treatment, samples were
+
+processed as described for CETSA-WB, and the soluble protein frac￾tions were subjected to Western blotting to assess dose-dependent
+
+stabilization of the target proteins.
+
+Bio-layer interferometry (BLI) assay. Binding kinetics and affinities
+
+were quantified using a Gatorprime Bio-Layer Interferometry system
+
+(Gator Bio, Palo Alto, CA, USA). All experiments were conducted at
+
+30 ∘
+
+C in 96-well black microplates with a working volume of 200 μL
+
+per well. The kinetic buffer used throughout the assay consisted of
+
+phosphate-buffered saline (PBS) supplemented with 0.02% Tween-
+
+20. Recombinant human proteins, including CYP3A5 (Biorbyt, cat.
+
+no. orb1477061), AKR1B10 (Abcam, cat. no. ab85415), and p65
+
+(SinoBiological, cat. no. 12054-H09E), were purified and biotinylated
+
+in-house using a standard NHS-biotinylation pipeline. SAS probe
+
+(Gator Bio, cat. no. 88-0002) was first hydrated in kinetic buffer and
+
+then used to immobilize the biotinylated proteins to a target density
+
+over 5 nm. The compounds, Ginsenoside Rh1 and Celastrol, were
+
+prepared in a five-point, 1:2 serial dilution series, starting from 10 μM,
+
+following a standard protocol. To ensure data accuracy, a double
+
+reference subtraction was employed during data analysis using the
+
+Gatorprime software suite. This involved subtracting the signal from
+
+parallel reference sensors (immobilized protein exposed to buffer
+
+only, to correct for signal drift) and from a blank reference subtrac￾tion (non-immobilized sensors exposed to the compound, to correct
+
+for non-specific binding). The resulting sensorgrams were globally
+
+fitted to a 1:1 binding model to determine the association rate con￾stant (kon), dissociation rate constant (koff), and the equilibrium
+
+dissociation constant (Kd). The final Kd was calculated from the ratio
+
+of koff/kon with a standard error.
+
+Statistical analysis. Data were analyzed using GraphPad Prism
+
+(v10.5.0) and are presented as mean ± SD. Statistical significance was
+
+defined as p < 0.05.
 
 Reporting summary
 
@@ -2185,537 +2249,473 @@ Portfolio Reporting Summary linked to this article.
 
 Data availability
 
-The source data of three datasets used to train and evaluate the model
+The SCOPE dataset generated in this study has been deposited in
 
-is provided at https://github.com/zhaoyanpeng208/EviDTI/tree/main/
+Zenodo under accession code https://doi.org/10.5281/zenodo.
 
-dataset and https://zenodo.org/records/14056305. The source data of
+17217469 and is also accessible via our webserver: https://awi.cuhk.
 
-67 targets with 51 drugs used for literature validation of tyrosine kinase
+edu.cn/SCOPE/. All other datasets used in this study are publicly
 
-modulators is provided in https://github.com/zhaoyanpeng208/
+available from established resources, including DrugBank (https://go.
 
-EviDTI/tree/main/dataset/len_v_s_dataset and https://zenodo.org/
+Article https://doi.org/10.1038/s41467-025-66311-9
 
-Article https://doi.org/10.1038/s41467-025-62235-6
+Nature Communications | (2025) 16:11509 12
 
-Nature Communications | (2025) 16:6915 13
+drugbank.com), ChEMBL (https://www.ebi.ac.uk/chembl), BindingDB
 
-records/14056305. The source data of two Lenvatinib analogs (LYD-2-
+(https://www.bindingdb.org), DrugCentral (http://drugcentral.org),
 
-45 and LYD-2-49) with 11 tyrosine kinase targets used for patent vali￾dation of tyrosine kinase modulators is provided in https://github.
+the Therapeutic Target Database (http://db.idrblab.net/ttd/), Pub￾Chem (https://pubchem.ncbi.nlm.nih.gov), Pharos (https://pharos.nih.
 
-com/zhaoyanpeng208/EviDTI/tree/main/dataset/len_case_dataset and
+gov), PROMISCUOUS, and the IUPHAR/BPS Guide to
 
-https://zenodo.org/records/14056305. Source data are provided with
+PHARMACOLOGY. Additional resources include TransformerCPI
 
-this paper through Figshare https://doi.org/10.6084/m9.figshare.
+(https://github.com/lifanchen-simm/transformerCPI), the SNAP
 
-28816634. Source data are provided with this paper.
+library (http://snap.stanford.edu), and previously published kinase
+
+inhibitor datasets23,58. Protein structures were obtained from Alpha￾Fold DB (https://www.alphafold.ebi.ac.uk/) and the RCSB PDB (https://
+
+www.rcsb.org/). Representative protein structures used for molecular
+
+visualization were obtained from AlphaFold DB and the Protein Data
+
+Bank, including https://alphafold.ebi.ac.uk/files/AF-P46095-F1-model_
+
+v4.pdb, https://alphafold.ebi.ac.uk/files/AF-O43826-F1-model_v4.pdb,
+
+https://alphafold.ebi.ac.uk/files/AF-P42224-F1-model_v4.pdb, and
+
+https://files.rcsb.org/download/1MBA.cif. Source data are provided
+
+with this paper on figshare: https://doi.org/10.6084/m9.figshare.
+
+30372982.
 
 Code availability
 
-The source data and codes of EviDTI are available on GitHub at https://
+The source code used to develop the model, perform the analyses, and
 
-github.com/zhaoyanpeng208/EviDTI, which has also been deposited
+generate the results in this study is publicly available under the
 
-in the Zenodo under accession code https://zenodo.org/records/
+Apache-2.0 license at: https://github.com/Yigang-Chen/SCOPE-DTI.
 
-1576047183. Prottrans (https://github.com/agemagician/ProtTrans) is
+The specific version of the code associated with this publication has
 
-used for calculating target protein representations. Data are analyzed
+been archived in Zenodo: https://doi.org/10.5281/zenodo.1721739165.
 
-using numpy v1.24.3 (https://numpy.org/), pandas v1.4.2 (https://
+Benchmark implementations of other methods used in this study are
 
-pandas.pydata.org/), Seaborn V0.11.2 (https://seaborn.pydata.org/)
+available at: MolTrans: https://github.com/kexinhuang12345/
 
-and Matplotlib v3.4.3 (https://matplotlib.org/). Structures are visua￾lized by Pymol v2.5.2 (https://www.pymol.org/).
+MolTrans, TransformerCPI: https://github.com/lifanchen-simm/
+
+transformerCPI, BertDTI: https://github.com/hskang0906/DTI￾Prediction, DrugBAN: https://github.com/peizhenbai/DrugBAN.
 
 References
 
-1. Miteva, M. A. et al. FAF-Drugs: free ADME/tox filtering of compound
+1. Luo, Y. et al. A network integration approach for drug-target inter￾action prediction and computational drug repositioning from het￾erogeneous information. Nat. Commun. 8, 573 (2017).
 
-collections. Nucleic Acids Res. 34, W738–W744 (2006).
+2. Pushpakom, S. et al. Drug repurposing: progress, challenges and
 
-2. Bagherian, M. et al. Machine learning approaches and databases for
+recommendations. Nat. Rev. Drug Discov. 18, 41–58 (2019).
 
-prediction of drug–target interaction: a survey paper. Brief. Bioin￾forma. 22, 247–269 (2021).
+3. Mizutani, S., Pauwels, E., Stoven, V., Goto, S. & Yamanishi, Y.
 
-3. Yang, Z., Zeng, X., Zhao, Y. & Chen, R. AlphaFold2 and its applica￾tions in the fields of biology and medicine. Signal Transduct. Target.
+Relating drug-protein interaction network with drug side effects.
 
-Ther. 8, 115 (2023).
+Bioinformatics 28, i522–i528 (2012).
 
-4. Liu, T. et al. Applying high-performance computing in drug dis￾covery and molecular simulation. Natl. Sci. Rev. 3, 49–63 (2016).
+4. Smit, I. A. et al. Systematic analysis of protein targets associated
 
-5. Zitnik, M. et al. Machine learning for integrating data in biology and
+with adverse events of drugs from clinical trials and postmarketing
 
-medicine: principles, practice, and opportunities. Inf. Fusion 50,
+reports. Chem. Res. Toxicol. 34, 365–384 (2021).
 
-71–91 (2019).
+5. Friman, T. Mass spectrometry-based Cellular Thermal Shift Assay
 
-6. Zahra, N. & Mohammad Keyvanpour, R. A Comparative Analytical
+(CETSA®) for target deconvolution in phenotypic drug discovery.
 
-Review on Machine Learning Methods in Drugtarget Interactions
+Bioorg. Med. Chem. 28, 115174 (2020).
 
-Prediction. Curr. Comput.Aided Drug Des. 19, 325–355 (2023).
+6. Huang, Y. et al. A robust drug-target interaction prediction frame￾work with capsule network and transfer learning. Int. J. Mol. Sci. 24,
 
-7. Sydow, D. et al. Advances and challenges in computational target
+14061 (2023).
 
-prediction. J. Chem. Inf. Model. 59, 1728–1742 (2019).
+7. Koutsoukas, A. et al. From in silico target prediction to multi-target
 
-8. Sieg, J., Flachsenberg, F. & Rarey, M. In need of bias control: eval￾uating chemical data for machine learning in structure-based vir￾tual screening. J. Chem. Inf. Model. 59, 947–961 (2019).
+drug design: current databases, methods and applications. J. Pro￾teom. 74, 2554–2574 (2011).
 
-9. Lim, S. et al. A review on compound-protein interaction prediction
+8. Chen, W., Liu, X., Zhang, S. & Chen, S. Artificial intelligence for drug
 
-methods: data, format, representation and model. Comput. Struct.
+discovery: resources, methods, and applications. Mol. Ther. Nucleic
 
-Biotechnol. J. 19, 1541–1556 (2021).
+Acids 31, 691–702 (2023).
 
-10. Ye, Q. et al. A unified drug–target interaction prediction framework
+9. Bagherian, M. et al. Machine learning approaches and databases for
 
-based on knowledge graph and recommendation system. Nat.
+prediction of drug-target interaction: a survey paper. Brief. Bioin￾forma. 22, 247–269 (2021).
 
-Commun. 12, 6775 (2021).
+10. Van Westen, G. J., Wegner, J. K., IJzerman, A. P., Van Vlijmen, H. W. &
 
-11. Yamanishi, Y., Araki, M., Gutteridge, A., Honda, W. & Kanehisa, M.
+Bender, A. Proteochemometric modeling as a tool to design
 
-Prediction of drug–target interaction networks from the integration
+selective compounds and for extrapolating to novel targets. Med￾ChemComm 2, 16–30 (2011).
 
-of chemical and genomic spaces. Bioinformatics 24,
+11. Öztürk, H., Özgür, A. & Ozkirimli, E. DeepDTA: deep drug-target
 
-i232–i240 (2008).
+binding affinity prediction. Bioinformatics 34, i821–i829
 
-12. Wang, X. et al. Multitask joint strategies of self-supervised repre￾sentation learning on biomedical networks for drug discovery. Nat.
+(2018).
 
-Mach. Intell. 5, 445–456 (2023).
+12. Lee, I., Keum, J. & Nam, H. DeepConv-DTI: prediction of drug-target
 
-13. van Westen, G. J. P., Wegner, J. K., IJzerman, A. P., van Vlijmen, H. W.
+interactions via deep learning with convolution on protein
 
-T. & Bender, A. Proteochemometric modeling as a tool to design
+sequences. PLoS Comput. Biol. 15, e1007129 (2019).
 
-selective compounds and for extrapolating to novel targets. Med.
+13. Karimi, M., Wu, D., Wang, Z. & Shen, Y. DeepAffinity: Interpretable
 
-Chem. Commun. 2, 16–30 (2011).
+deep learning of compound-protein affinity through unified recur￾rent and convolutional neural networks. Bioinformatics 35,
 
-14. de la Fuente, J. et al. Towards a more inductive world for drug
+3329–3338 (2019).
 
-repurposing approaches. Nat. Mach. Intell. 7, 495–508 (2025).
+14. Kang, H. et al. Fine-tuning of BERT model to accurately predict
 
-15. Lee, I. & Nam, H. Sequence-based prediction of protein binding
+drug-target interactions. Pharmaceutics 14, https://doi.org/10.
 
-regions and drug–target interactions. J. Cheminform. 14, 5 (2022).
+3390/pharmaceutics14081710 (2022).
 
-16. Tsubaki, M., Tomii, K. & Sese, J. Compound–protein interaction
-
-prediction with end-to-end learning of neural networks for graphs
-
-and sequences. Bioinformatics 35, 309–318 (2019).
-
-17. Zhao, Q., Zhao, H., Zheng, K. & Wang, J. HyperAttentionDTI:
-
-improving drug–protein interaction prediction by sequence-based
-
-deep learning with attention mechanism. Bioinformatics 38,
-
-655–662 (2022).
-
-18. Bai, P., Miljković, F., John, B. & Lu, H. Interpretable bilinear attention
+15. Bai, P., Miljković, F., John, B. & Lu, H. Interpretable bilinear attention
 
 network with domain adaptation improves drug–target prediction.
 
 Nat. Mach. Intell. 5, 126–136 (2023).
 
-19. Lee, I., Keum, J. & Nam, H. DeepConv-DTI: prediction of drug-target
+16. Tsubaki, M., Tomii, K. & Sese, J. Compound-protein interaction
 
-interactions via deep learning with convolution on protein
+prediction with end-to-end learning of neural networks for graphs
 
-sequences. PLOS Comput. Biol. 15, e1007129 (2019).
+and sequences. Bioinformatics 35, 309–318 (2019).
 
-20. Huang, K., Xiao, C., Glass, L. M. & Sun, J. MolTrans: molecular
-
-interaction transformer for drug–target interaction prediction.
-
-Bioinformatics 37, 830–836 (2021).
-
-21. Bian, J., Zhang, X., Zhang, X., Xu, D. & Wang, G. MCANet: shared￾weight-based MultiheadCrossAttention network for drug–target
-
-interaction prediction. Brief. Bioinforma. 24, bbad082 (2023).
-
-22. He, Y. et al. Flexible drug-target interaction prediction with inter￾active information extraction and trade-off. Expert Syst. Appl. 249,
-
-123821 (2024).
-
-23. Hadipour, H. et al. GraphBAN: an inductive graph-based approach
-
-for enhanced prediction of compound-protein interactions. Nat.
-
-Commun. 16, 2541 (2025).
-
-24. Gao, M. et al. GraphormerDTI: a graph transformer-based approach
-
-for drug-target interaction prediction. Comput. Biol. Med. 173,
-
-108339 (2024).
-
-25. Sun, Y., Li, Y. Y., Leung, C. K. & Hu, P. iNGNN-DTI: prediction of
-
-drug–target interaction with interpretable nested graph neural
-
-network and pretrained molecule models. Bioinformatics 40,
-
-btae135 (2024).
-
-26. Lu, Z. et al. DTIAM: a unified framework for predicting drug-target
-
-interactions, binding affinities and drug mechanisms. Nat. Com￾mun. 16, 2548 (2025).
-
-27. Lee, J., Jun, D. W., Song, I. & Kim, Y. DLM-DTI: a dual language model
-
-for the prediction of drug-target interaction with hint-based learn￾ing. J. Cheminform 16, 14 (2024).
-
-28. Hayes, T. et al. Simulating 500 million years of evolution with a
-
-language model. Science 387, 850–858 (2025).
-
-29. Lin, Z. et al. Evolutionary-scale prediction of atomic-level
-
-protein structure with a language model. Science 379,
-
-1123–1130 (2023).
-
-30. Elnaggar, A. et al. ProtTrans: toward understanding the language of
-
-life through self-supervised learning. IEEE Trans. Pattern Anal. Mach.
-
-Intell. 44, 7112–7127 (2022).
-
-31. Fang, Y. et al. Knowledge graph-enhanced molecular contrastive
-
-learning with functional prompt. Nat. Mach. Intell. 5,
-
-542–553 (2023).
-
-32. Li, H. et al. A knowledge-guided pre-training framework for
-
-improving molecular representation learning. Nat. Commun. 14,
-
-7568 (2023).
-
-33. He, C., Yang, C., Zhang, H., Long, Y. & Zhao, X. DTI-MPFM: a multi￾perspective fusion model for predicting potential drug–target
-
-interactions. Expert Syst. Appl. 264, 125740 (2025).
-
-34. Zhao, W. et al. MSI-DTI: predicting drug-target interaction based on
-
-multi-source information and multi-head self-attention. Brief.
-
-Bioinforma. 25, bbae238 (2024).
-
-35. Dalkıran, A. et al. Transfer learning for drug–target interaction pre￾diction. Bioinformatics 39, i103–i110 (2023).
-
-36. Abbasi, K. et al. DeepCDA: deep cross-domain compound–protein
-
-affinity prediction through LSTM and convolutional neural net￾works. Bioinformatics 36, 4633–4642 (2020).
-
-37. Collins, K. M. et al. Building machines that learn and think with
-
-people. Nat. Hum. Behav. 8, 1851–1863 (2024).
-
-38. Nix, D. A. & Weigend, A. S. Estimating the mean and variance of the
-
-target probability distribution. Proc. 1994 IEEE Int. Conf. Neural
-
-Netw. (ICNN’94) 1, 55–60 (1994).
-
-Article https://doi.org/10.1038/s41467-025-62235-6
-
-Nature Communications | (2025) 16:6915 14
-
-39. Amini, A., Soleimany, A. P., Schwarting, W., Bhatia, S. N. & Rus, D.
-
-Uncovering and mitigating algorithmic bias through learned latent
-
-structure. in Proceedings of the 2019 AAAI/ACM Conference on AI,
-
-Ethics, and Society 289–295 (Association for Computing Machinery,
-
-2019). https://doi.org/10.1145/3306618.3314243.
-
-40. Luo, Y., Liu, Y. & Peng, J. Calibrated geometric deep learning
+17. Luo, Y., Liu, Y. & Peng, J. Calibrated geometric deep learning
 
 improves kinase–drug binding predictions. Nat. Mach. Intell. 5,
 
 1390–1401 (2023).
 
-41. Fan, Z. et al. Reducing overconfident errors in molecular property
+18. Zheng, S., Li, Y., Chen, S., Xu, J. & Yang, Y. Predicting drug–protein
 
-classification using Posterior Network. Patterns 5, 100991 (2024).
+interaction using quasi-visual question answering system. Nat.
 
-42. Xu, H. et al. Deep active learning with high structural discrimin￾ability for molecular mutagenicity prediction. Commun. Biol. 7,
+Mach. Intell. 2, 134–140 (2020).
 
-1071 (2024).
+19. Huang, K., Xiao, C., Glass, L. M. & Sun, J. MolTrans: Molecular
 
-43. Tan, H. S., Wang, K. & McBeth, R. Deep evidential learning for
+Interaction Transformer for drug-target interaction prediction.
 
-radiotherapy dose prediction. Comput. Biol. Med. 182,
+Bioinformatics 37, 830–836 (2021).
 
-109172 (2024).
+20. Gilson, M. K. et al. BindingDB in 2015: a public database for med￾icinal chemistry, computational chemistry and systems pharma￾cology. Nucleic Acids Res. 44, D1045–1053 (2016).
 
-44. Lin, Y. et al. Uncertainty quantification via a memristor Bayesian
+21. Bai, P. et al. Hierarchical clustering split for low-bias evaluation of
 
-deep neural network for risk-sensitive reinforcement learning. Nat.
+drug-target interaction prediction. In: 2021 IEEE International Con￾ference on Bioinformatics and Biomedicine (BIBM), 641–644, https://
 
-Mach. Intell. 5, 714–723 (2023).
+doi.org/10.1109/BIBM52615.2021.9669515 (IEEE, 2021).
 
-45. Janet, J. P., Duan, C., Yang, T., Nandy, A. & Kulik, H. J. A quantitative
+22. Liu, H., Sun, J., Guan, J., Zheng, J. & Zhou, S. Improving compound￾protein interaction prediction by building up highly credible
 
-uncertainty metric controls error in neural network-driven chemical
+negative samples. Bioinformatics 31, i221–229 (2015).
 
-discovery. Chem. Sci. 10, 7913–7922 (2019).
-
-46. Tran, K. et al. Methods for comparing uncertainty quantifications for
-
-material property predictions. Mach. Learn. Sci. Technol. 1,
-
-025006 (2020).
-
-47. Jospin, L. V., Buntine, W. L., Boussaid, F., Laga, H. & Bennamoun
-
-Hands-on Bayesian neural networks—a tutorial for deep learning
-
-users. IEEE Comput. Intell. Mag. 17, 29–48 (2020).
-
-48. Lakshminarayanan, B., Pritzel, A. & Blundell, C. Simple and scalable
-
-predictive uncertainty estimation using deep ensembles. in Proc.
-
-31st International Conference on Neural Information Processing
-
-Systems 6405–6416 (Curran Associates Inc., 2017).
-
-49. Y. Gal & Ghahramani, Z. Dropout as a Bayesian approximation:
-
-representing model uncertainty in deep learning. in Proc. 33rd
-
-International Conference on Machine Learning (eds Balcan, M. F. &
-
-Weinberger, K. Q.) Vol. 48, 1050–1059 (PMLR, 2016).
-
-50. Eyke, N. S., Green, W. H. & Jensen, K. F. Iterative experimental
-
-design based on active machine learning reduces the experimental
-
-burden associated with reaction screening. React. Chem. Eng. 5,
-
-1963–1972 (2020).
-
-51. Hirschfeld, L., Swanson, K., Yang, K., Barzilay, R. & Coley, C. W.
-
-Uncertainty quantification using neural networks for molecular
-
-property prediction. J. Chem. Inf. Model. 60, 3770–3780 (2020).
-
-52. Smith, J. S., Nebgen, B., Lubbers, N., Isayev, O. & Roitberg, A. E. Less
-
-is more: sampling chemical space with active learning. J. Chem.
-
-Phys. 148, 241733 (2018).
-
-53. Sensoy, M., Kaplan, L. & Kandemir, M. Evidential deep learning to
-
-quantify classification uncertainty. in Proc. 32nd International Con￾ference on Neural Information Processing Systems 3183–3193
-
-(Curran Associates Inc., 2018).
-
-54. Amini, A., Schwarting, W., Soleimany, A. & Rus, D. Deep evidential
-
-regression. in Proc. 34th International Conference on Neural Infor￾mation Processing Systems (Curran Associates Inc., 2020).
-
-55. Soleimany, A. P. et al. Evidential deep learning for guided molecular
-
-property prediction and discovery. ACS Cent. Sci. 7,
-
-1356–1367 (2021).
-
-56. Wang, R. et al. An uncertainty-guided deep learning method facil￾itates rapid screening of CYP3A4 inhibitors. J. Chem. Inf. Model. 63,
-
-7699–7710 (2023).
-
-57. Wang, D. et al. Learning with uncertainty to accelerate the discovery
-
-of histone lysine-specific demethylase 1A (KDM1A/LSD1) inhibitors.
-
-Brief. Bioinforma. 24, bbac592 (2023).
-
-58. Zhang, X.-C. et al. MG-BERT: leveraging unsupervised atomic
-
-representation learning for molecular property prediction. Brief.
-
-Bioinforma. 22, bbab152 (2021).
-
-59. Davis, M. I. et al. Comprehensive analysis of kinase inhibitor selec￾tivity. Nat. Biotechnol. 29, 1046–1051 (2011).
-
-60. Tang, J. et al. Making sense of large-scale kinase inhibitor bioactivity
+23. Tang, J. et al. Making sense of large-scale kinase inhibitor bioactivity
 
 data sets: a comparative and integrative analysis. J. Chem. Inf.
 
 Model. 54, 735–743 (2014).
 
-61. Breiman, L. Random forests. Mach. Learn. 45, 5–32 (2001).
+24. Chatterjee, A. et al. Improving the generalizability of protein-ligand
 
-62. Cortes, C. & Vapnik, V. Support-vector networks. Mach. Learn. 20,
+binding predictions with AI-Bind. Nat. Commun. 14, 1989 (2023).
 
-273–297 (1995).
-
-63. Bhuvaneswari, R. & Kalaiselvi, K. Naive Bayesian Classification
-
-Approach in Healthcare Applications. International Journal of
-
-Computer Science and Telecommunications. 3, 106–112 (2012).
-
-64. Nguyen, T. et al. GraphDTA: predicting drug–target binding affinity
-
-with graph neural networks. Bioinformatics 37, 1140–1147 (2021).
-
-65. Chen, L. et al. TransformerCPI: improving compound–protein
+25. Chen, L. et al. TransformerCPI: Improving compound-protein
 
 interaction prediction by sequence-based deep learning with self￾attention mechanism and label reversal experiments. Bioinfor￾matics 36, 4406–4414 (2020).
 
-66. Zhang, S. et al. 111AIGO-DTI: predicting drug–target interactions
+26. UniProt Consortium. UniProt: The Universal Protein Knowledgebase
 
-based on improved drug properties combined with adaptive itera￾tive algorithms. J. Chem. Inf. Model. 64, 4373–4384 (2024).
+in 2023. Nucleic Acids Res. 51, D523–D531 (2023).
 
-67. Han, K., Lakshminarayanan, B. & Liu, J. Reliable Graph Neural Net￾works for Drug Discovery Under Distributional Shift. Arxiv https://
+27. Harding, S. D. et al. The IUPHAR/BPS Guide to PHARMACOLOGY in
 
-doi.org/10.48550/arXiv.2111.12951 (2021)
+2024. Nucleic Acids Res. 52, D1438–D1449 (2024).
 
-68. Law, V. et al. DrugBank 4.0: shedding new light on drug metabo￾lism. Nucleic Acids Res. 42, D1091–D1097 (2014).
+28. Jumper, J. et al. Highly accurate protein structure prediction with
 
-69. Zhao, Y. et al. Tyrosine kinase inhibitors and their unique therapeutic
+AlphaFold. Nature 596, 583–589 (2021).
 
-potentialities to combat cancer. Int. J. Biol. Macromol. 168,
+29. Kim, S. et al. PubChem 2023 update. Nucleic Acids Res. 51,
 
-22–37 (2021).
+D1373–D1380 (2023).
 
-70. Huang, L., Jiang, S. & Shi, Y. Tyrosine kinase inhibitors for solid
+30. Zdrazil, B. et al. The ChEMBL Database in 2023: a drug discovery
 
-tumors in the past 20 years (2001–2020). J. Hematol. Oncol. 13,
+platform spanning multiple bioactivity data types and time periods.
 
-143 (2020).
+Nucleic Acids Res. 52, D1180–D1192 (2024).
 
-71. Yang, Y., Li, S., Wang, Y., Zhao, Y. & Li, Q. Protein tyrosine kinase
+31. Tosco, P., Stiefl, N. & Landrum, G. Bringing the MMFF force field to
 
-inhibitor resistance in malignant tumors: molecular mechanisms and
+the RDKit: Implementation and validation. J. Cheminformat. 6,
 
-future perspective. Signal Transduct. Target. Ther. 7, 329 (2022).
+37 (2014).
 
-72. Manning, G., Whyte, D. B., Martinez, R., Hunter, T. & Sudarsanam, S.
+32. Zhang, C., Song, D., Huang, C., Swami, A. & Chawla, N. V. Hetero￾geneous Graph Neural Network. In: Proceedings of the 25th ACM
 
-The protein kinase complement of the human genome. Science
+SIGKDD International Conference on Knowledge Discovery & Data
 
-298, 1912–1934 (2002).
+Mining, 793–803, https://doi.org/10.1145/3292500.3330961 (ACM,
 
-73. Zhao, J. et al. Flumatinib, a selective inhibitor of BCR-ABL/PDGFR/
+Anchorage, AK, USA, 2019).
 
-KIT, effectively overcomes drug resistance of certain KIT mutants.
+33. Wu, L. et al. MAPE-PPI: Towards effective and efficient protein￾protein interaction prediction via microenvironment-aware protein
 
-Cancer Sci. 105, 117–125 (2014).
+Article https://doi.org/10.1038/s41467-025-66311-9
 
-74. Sidwell, R. W., Bailey, K. W., Wong, M.-H., Barnard, D. L. & Smee, D.
+Nature Communications | (2025) 16:11509 13
 
-F. In vitro and in vivo influenza virus-inhibitory effects of viramidine.
+embedding, https://doi.org/10.48550/arXiv.2402.14391
 
-Antivir. Res. 68, 10–17 (2005).
+(2024).
 
-75. Kandandapani, S., Ridzwan, N. F. W., Mohamad, S. B. & Tayyab, S.
+34. Jing, B., Eismann, S., Suriana, P., Townshend, R. J. L. & Dror, R.
 
-Exploring the interaction between tyrphostin 9 and human serum
+Learning from protein structure with geometric vector perceptrons,
 
-albumin using biophysical and computational methods. J. Biomol.
+https://doi.org/10.48550/arXiv.2009.01411 (2021).
 
-Struct. Dyn. 38, 4134–4142 (2020).
+35. Li, M. et al. DGL-LifeSci: an open-source toolkit for deep learning on
 
-76. Walsh, R. R. et al. Plasma and cerebrospinal fluid pharmacokinetics
+graphs in life science. ACS Omega 6, 27233–27238 (2021).
 
-of vodobatinib, a neuroprotective c-Abl tyrosine kinase inhibitor for
+36. Cortes, C. & Vapnik, V. Support-vector networks. Mach. Learn. 20,
 
-the treatment of Parkinson’s disease. Parkinsonism Relat. Disord.
+273–297 (1995).
 
-108, 105281 (2023).
+37. Rumelhart, D. E., Hinton, G. E. & Williams, R. J. Learning repre￾sentations by back-propagating errors. Nature 323, 533–536
 
-77. Wilhelm, S. et al. BAY 43-9006 Exhibits Broad Spectrum Anti-Tumor
+(1986).
 
-Activity and Targets Raf/MEK/ERK Pathway and Receptor Tyrosine
+38. McInnes, L., Healy, J. & Melville, J. Umap: Uniform manifold
 
-Kinases Involved in Tumor Progression and Angiogenesis. Clin.
+approximation and projection for dimension reduction. https://doi.
 
-Cancer Res. 9, 6088S (2003).
+org/10.48550/arXiv.1802.03426 (2018).
 
-78. Abramson, J. et al. Accurate structure prediction of biomolecular
+39. Ankerst, M., Breunig, M. M., Kriegel, H.-P. & Sander, J. Optics:
 
-interactions with AlphaFold 3. Nature 630, 493–500 (2024).
+Ordering points to identify the clustering structure. ACM Sigmod.
 
-79. Zhao, Y. et al. A point cloud graph neural network for protein–ligand
+Rec. 28, 49–60 (1999).
 
-binding site prediction. Int. J. Mol. Sci. 25, 9280 (2024).
+40. Atanasov, A. G., Zotchev, S. B., Dirsch, V. M. & Supuran, C. T. Natural
 
-80. Zhao, Y. et al. Identification of metal ion-binding sites in RNA
+products in drug discovery: Advances and opportunities. Nat. Rev.
 
-structures using deep learning method. Brief. Bioinforma. 24,
+Drug Discov. 20, 200–216 (2021).
 
-bbad049 (2023).
+41. Tang, Y. et al. Panax notoginseng alleviates oxidative stress through
 
-81. Stärk, H., Dallago, C., Heinzinger, M. & Rost, B. Light attention pre￾dicts protein location from the language of life. Bioinforma. Adv. 1,
+miRNA regulations based on systems biology approach. Chin. Med.
 
-vbab035 (2021).
+18, 74 (2023).
 
-Article https://doi.org/10.1038/s41467-025-62235-6
+42. Tam, D. N. H. et al. Ginsenoside Rh1: a systematic review of its
 
-Nature Communications | (2025) 16:6915 15
+pharmacological properties. Planta Med. 84, 139–152 (2018).
 
-82. Fang, X. et al. Geometry-enhanced molecular representation
+43. Lyu, X. et al. Ginsenoside Rh1 inhibits colorectal cancer cell
 
-learning for property prediction. Nat. Mach. Intell. 4, 127–134 (2022).
+migration and invasion in vitro and tumor growth in vivo. Oncol.
 
-83. Zhao, Y. Evidential deep learning-based drug-target interaction
+Lett. 18, 4160–4166 (2019).
 
-prediction. zhaoyanpeng208/EviDTI. Zenodo https://zenodo.org/
+44. Wang, C. et al. Celastrol as an emerging anticancer agent: current
 
-records/15760471 (2025).
+status, challenges and therapeutic strategies. Biomed. Pharmac￾other. 163, 114882 (2023).
+
+45. Savage, S. R. et al. Pan-cancer proteogenomics expands the land￾scape of therapeutic targets. Cell 187, 4389–4407.e15 (2024).
+
+46. Uhlén, M. et al. Proteomics. Tissue-based map of the human pro￾teome. Science 347, 1260419 (2015).
+
+47. Hu, M. et al. Celastrol-induced Nur77 interaction with TRAF2 alle￾viates inflammation by promoting mitochondrial ubiquitination and
+
+autophagy. Mol. Cell 66, 141–153.e6 (2017).
+
+48. Menichetti, G., Barabási, A.-L. & Loscalzo, J. Chemical complexity of
+
+food and implications for therapeutics. N. Engl. J. Med. 392,
+
+1836–1845 (2025).
+
+49. Coates, P. M. et al. The evolution of science and regulation of
+
+dietary supplements: past, present, and future. J. Nutr. 154,
+
+2335–2345 (2024).
+
+50. Zhang, T. et al. Red rice extract as a biological UV filter and its
+
+photoprotective enhancement effects. J. Dermatol. Sci. Cosmet.
+
+Technol. 100102, https://doi.org/10.1016/j.jdsct.2025.
+
+100102 (2025).
+
+51. Terwilliger, T. C. et al. AlphaFold predictions are valuable hypoth￾eses and accelerate but do not replace experimental structure
+
+determination. Nat. Methods 21, 110–116 (2024).
+
+52. Knox, C. et al. DrugBank 6.0: The DrugBank Knowledgebase for
+
+2024. Nucleic Acids Res. 52, D1265–D1275 (2024).
+
+53. Avram, S. et al. DrugCentral 2023 extends human clinical data and
+
+integrates veterinary drugs. Nucleic Acids Res. 51, D1276–D1287
+
+(2023).
+
+54. Zhou, Y. et al. TTD: Therapeutic Target Database describing target
+
+druggability information. Nucleic Acids Res. 52, D1465–D1477
+
+(2024).
+
+55. Kelleher, K. J. et al. Pharos 2023: an integrated resource for the
+
+understudied human proteome. Nucleic Acids Res. 51, D1405–
+
+D1416 (2023).
+
+56. Gallo, K. et al. PROMISCUOUS 2.0: a resource for drug￾repositioning. Nucleic Acids Res. 49, D1373–D1380 (2021).
+
+57. Leskovec, J. & Sosič, R. SNAP: a general-purpose network analysis
+
+and graph-mining library. ACM Trans. Intell. Syst. Technol. 8,
+
+1:1–1:20 (2016).
+
+58. Davis, M. I. et al. Comprehensive analysis of kinase inhibitor selec￾tivity. Nat. Biotechnol. 29, 1046–1051 (2011).
+
+59. Townshend, R. J. L. et al. ATOM3D: Tasks On Molecules in Three
+
+Dimensions https://doi.org/10.48550/arXiv.2012.04035 (2022).
+
+60. Paszke, A. et al. PyTorch: an imperative style, high-performance
+
+deep learning library, https://doi.org/10.48550/arXiv.1912.01703
+
+(2019).
+
+61. Fey, M. & Lenssen, J. E. Fast graph representation learning with
+
+PyTorch geometric, https://doi.org/10.48550/arXiv.1903.
+
+02428 (2019).
+
+62. Wang, M. et al. Deep graph library: a graph-centric, highly￾performant package for graph neural networks, https://doi.org/10.
+
+48550/arXiv.1909.01315 (2020).
+
+63. Pedregosa, F. et al. Scikit-learn: machine learning in Python, https://
+
+doi.org/10.48550/arXiv.1201.0490 (2018).
+
+64. Harris, C. R. et al. Array programming with NumPy, https://doi.org/
+
+10.48550/arXiv.2006.10256 (2020).
+
+65. Chen, Y. et al. Semi-inductive dataset construction and framework
+
+optimization for practical drug target interaction prediction with
+
+ScopeDTI. SCOPE-DTI, https://doi.org/10.5281/zenodo.
+
+17217391 (2025).
 
 Acknowledgements
 
-The authors would like to thank Jingjing Wang for her help. The authors
+This work was financially supported by Shenzhen Science and Tech￾nology Program (JCYJ20220530143615035, H.-D.H); the Warshel Insti￾tute for Computational Biology funding from Shenzhen City and
 
-sincerely appreciate the support of the Partners. All individuals have
+Longgang District (LGKCSDPT2025001, A.W.); Shenzhen-Hong Kong
 
-consented to the acknowledgment. This work was supported by the
+Cooperation Zone for Technology and Innovation (HZQB-KCZYB-
 
-National Key R&D Program of China (Grant No. 2023YFC2604400,
+2020056, P2-2022-HDH-001-A, H.-D.H); Guangdong Young Scholar
 
-2024YFA1307700) and Natural Science Foundation of Shanghai (Grant
+Development Fund of Shenzhen Ganghong Group Co., Ltd.
 
-No. 25ZR1402171). Funding was provided to S.H. (2023YFC2604400),
+(2021E0005, 2022E0035, H.-D.H); Phase III Government Matching Fund
 
-X.B. (2024YFA1307700), and Y. Zhao (25ZR1402171).
+of Shenzhen Ganghong Group Co., Ltd. (2023E0012, H.-D.H); Guang￾dong S&T Program (2024A0505050001 Y.-C.-D.L, 2024A0505050002
+
+H.-Y.H); 2023 The Second Affiliated Hospital of the Chinese University of
+
+Hong Kong, Shenzhen Joint Fund Project (HUUF-MS-202308 H.-Y.H,
+
+HUUF-MS-202309 Y.-C.-D.L); Better Way Group - Chinese University of
+
+Hong Kong (Shenzhen) Warshel Joint Laboratory for skin health and
+
+active molecule innovation (2024E0087, H.-D.H); Shenzhen Science and
+
+Technology Innovation Program (JCYJ20250604141235046 H.-
+
+Y.H, JCYJ20250604141041017 Y.-C.-D.L). We would like to express our
+
+sincere gratitude to the Vincent & Lily Woo Foundation for their gener￾ous support of the Vincent & Lily Woo Fellowship in Memory of Dr Albert
+
+Wong (To Y.C.). This fellowship, endowed by the Vincent & Lily Woo
+
+Foundation, is provided through MCMIA Foundation Limited, and we are
+
+deeply grateful for their contribution to our research. We would also like
+
+to thank Mr. Cheng Xiang for his valuable assistance in the wet lab
+
+experiments, which greatly contributed to this work.
 
 Author contributions
 
-Y. Zhao, Y.X., C.W., S.H., D.Z., and X.B. conceived the study; Y. Zhao, Y.X.,
+Y.C., X.J., Z.Z. (Ziyue Zhang), Z.Z. (Zihao Zhu), H.-Y.H. and H.-D.H. con￾ceived the study. Data collection was conducted by Y.C. and Z.Z. (Ziyue
 
-Y. Zhang, D.Y., M.W., H.X., and S.L. performed the experiments; Y. Zhao,
+Zhang), X.L., J.F., and Y.H. Y.C., Z.Z. (Ziyue Zhang), K.C. and A.W. designed
 
-H.Z., Z.L., G.Z., M.L, Z.C., and X.W. conducted the surveys; Y. Zhao, Y.X.,
+the methodology. Computational analysis was performed by Y.C. and
 
-L.W., and R.L. collated the data; Y. Zhao, Y.X., Y.W. and Y. Zhang per￾formed the writing-primer preparation; S.H., D.Z., and X.B. performed
+Z.Z. (Ziyue Zhang), Y.Z. (Yuming Zhou), K.C., C.S., X.L., S.C., and Y.H., with
 
-the writing-reviewing and editing, and S.H., D.Z., P.Z., and X.B. super￾vised the study. All authors have read and agreed to the published
+interpretability validation contributed by Y.C., and Z.Z. (Ziyue Zhang).
 
-version of the manuscript.
+Wetlab experiments were executed by X.J., Y.L., and Z.Z. (Zihao Zhu), Y.Z.
+
+(Yangyi Zhang), K.W., Y.-C.-D.L. The original manuscript was drafted by
+
+Y.C., X.J., and Z.Z. (Ziyue Zhang), C.S., H.-Y.H., S.-C.Y., T.Z., Y.-C.-D.L., and
+
+H.-D.H. All authors reviewed and approved the final manuscript.
 
 Competing interests
 
 The authors declare no competing interests.
+
+Article https://doi.org/10.1038/s41467-025-66311-9
+
+Nature Communications | (2025) 16:11509 14
 
 Additional information
 
@@ -2723,15 +2723,15 @@ Supplementary information The online version contains
 
 supplementary material available at
 
-https://doi.org/10.1038/s41467-025-62235-6.
+https://doi.org/10.1038/s41467-025-66311-9.
 
 Correspondence and requests for materials should be addressed to
 
-Peng Zan, Song He or Xiaochen Bo.
+Hsien-Da Huang.
 
-Peer review information Nature Communications thanks Brad Haubrich,
+Peer review information Nature Communications thanks Anna Rita Biz￾zarri and the other anonymous reviewer(s) for their contribution to the
 
-Guishen Wang, and the other, anonymous, reviewer for their contribu￾tion to the peer review of this work. A peer review file is available.
+peer review of this work. A peer review file is available.
 
 Reprints and permissions information is available at
 
@@ -2771,17 +2771,11 @@ creativecommons.org/licenses/by-nc-nd/4.0/.
 
 © The Author(s) 2025
 
-Article https://doi.org/10.1038/s41467-025-62235-6
+Article https://doi.org/10.1038/s41467-025-66311-9
 
-Nature Communications | (2025) 16:6915 16
+Nature Communications | (2025) 16:11509 15
 
 </code></pre>
-</div>
-
-
-<div class="file-block">
-  <div class="file-name">2.png</div>
-  <img src="files/2.png" alt="2.png">
 </div>
 
 </body>
