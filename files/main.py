@@ -1,27 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>我的学术附件</title>
-<style>
-  body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; padding: 20px; background: #f9f9f9; }
-  h1 { color: #333; }
-  .file-block { background: white; border-radius: 8px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-  .file-name { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; color: #0366d6; }
-  pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
-  code { font-family: "Courier New", monospace; }
-  img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px; }
-  .error { color: #d32f2f; }
-</style>
-</head>
-<body>
-<h1>📚 附件内容一览</h1>
-<p>以下内容由脚本自动生成，供 DeepSeek 阅读。</p>
-
-<div class="file-block">
-  <div class="file-name">main.py</div>
-  <pre><code># ============ Reading configs ==============
+# ============ Reading configs ==============
 
 from configs import get_cfg_defaults
 import os
@@ -106,8 +83,4 @@ result = trainer.train()
 
 e = time()  # End time
 
-print(f"Total running time: {round(e - s, 2)}s")  # Print the total running time</code></pre>
-</div>
-
-</body>
-</html>
+print(f"Total running time: {round(e - s, 2)}s")  # Print the total running time
