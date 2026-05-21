@@ -190,17 +190,10 @@ class ConditionalInitiableDataset(data.Dataset):
         if os.path.exists(self.protein_graph_path):
             print_with_time("Protein graph data already exists")
         else:
-            from concurrent.futures import ProcessPoolExecutor
-            with ProcessPoolExecutor(max_workers=40) as executor:
-                tasks = []
-                results = []
-                for uniprot_id in tqdm(self.coords_df.index):
-                    tasks.append(executor.submit(\
-                        self.featurize_protein, uniprot_id, self.k_p, self.r_p, self.l_p))
-                print_with_time("Waiting for tasks to complete")
-                for task in tqdm(tasks):
-                    result = task.result()
-                    results.append(result)
+            results = []
+            for uniprot_id in tqdm(self.coords_df.index, desc="Preprocessing proteins"):
+                result = self.featurize_protein(uniprot_id, self.k_p, self.r_p, self.l_p)
+                results.append(result)
             
             self.protein_data_dict = dict(zip(self.coords_df.index, results))
 
@@ -227,7 +220,7 @@ class DTIDataset(ConditionalInitiableDataset):
         else:
             raise ValueError(f"Unsupported protein mode: {father.protein_mode}")
             
-        list_IDs = [i for i in list_IDs if i in df.index]
+        list_IDs = list(range(len(self.df)))
         self.list_IDs = list_IDs
         self.father = father
         print_with_time("Loaded data, length:", len(self.df))
@@ -240,7 +233,7 @@ class DTIDataset(ConditionalInitiableDataset):
         row = self.df.iloc[index]
         
         # Process drug
-        v_d = row['sdf']
+        v_d = row['molfile_3d']
         v_d = self.father.featurize_drug(v_d, id=row['drug_chembl_id'])
 
         # Process protein based on mode
